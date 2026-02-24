@@ -28,7 +28,8 @@ absolute path for each file provided:
 find / -type f \( -name 8V2L -o -name bny0 -o -name c4ZX -o -name D8B3 -o -name FHl1 -o -name oiMO -o
 -name PFbD -o -name rmfX -o -name SRSq -o -name uqyw -o -name v2Vb -o -name X1Uy \) 2>/dev/null
 ```
-- **2>/dev/null** is important here s
+- **2>/dev/null** is important here so we can have no error messages outputted onto our terminal
+
 ![Gif2](https://github.com/user-attachments/assets/a8220999-5c2c-4f84-8a8e-eae9ccf630ea)
 
 As we can see the command has located all of the files except for **bny0**:
@@ -36,7 +37,7 @@ As we can see the command has located all of the files except for **bny0**:
 
 Now with this in mind, we can move onto the questions.
 
-# Question 1 (Indentifying File Group Ownership) 📁
+# Question 1 (Identifying File Group Ownership) 📁
 The first question states:
 - Which of the above files are owned by 
 the best-group group(enter the answer separated by spaces in alphabetical order)?
@@ -52,7 +53,15 @@ find / -type f \( -name 8V2L -o -name bny0 -o -name c4ZX -o -name D8B3 -o -name 
 
 
 
-# Analyzing File Contents
+# Question 2 (Looking for IP addresses)
+The second question states:
+- Which of these files contains an IP address?
+We can utilize the **find** command again to locate the paths for the files and save them to a file like so:
+
+
+
+![Gif4](https://github.com/user-attachments/assets/bf0fb6aa-7f8d-4cc2-888d-4811a5ae5266)
+
 
 # Hash Analysis
 
