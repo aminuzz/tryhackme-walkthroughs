@@ -27,7 +27,10 @@ nmap -sV -p1-65535 10.66.143.198
 The second question asks:
 - What is the version of nginx?
 <img width="1464" height="901" alt="image" src="https://github.com/user-attachments/assets/11816e88-d96a-4297-b8d6-85578fa13301" />
-- Since I ran the **Nmap** scan with the ``-sV`` flag, it showed open ports along with the specific service and service version running on the port.
-- In this case, on port 80 a **nginx** web server was running version **1.16.1**.
+
+Since I ran the **Nmap** scan with the ``-sV`` flag, it showed open ports along with the specific service and service version running on the port. In this case, on port 80 a **nginx** web server was running version **1.16.1**.
+
+
+
 <img width="845" height="71" alt="image" src="https://github.com/user-attachments/assets/706e0689-56a9-4757-ae7c-d24d58acc198" />
 
