@@ -78,5 +78,15 @@ After looking through the HTML I decided to further enumerate the website follow
 
 Nothing can be found on the web page so I checked the source code for the web page:
 <img width="1470" height="921" alt="image" src="https://github.com/user-attachments/assets/9e7874ed-150b-4710-9f5b-03b31c187277" />
-- 
+- There is a hidden paragraph element within the HTML that contains a Base64 string
 
+We can decode the string using a tool like CyberChef to decode the text:
+<img width="1919" height="938" alt="image" src="https://github.com/user-attachments/assets/1a2fd39b-8a62-40a0-b915-33a36a5b5d7e" />
+
+- The resulting text is the answer to question 1
+<img width="841" height="66" alt="image" src="https://github.com/user-attachments/assets/4f421237-a5d4-49c0-bc5e-5f7a6a0f661d" />
+
+
+## Question 2
+The second question states:
+- Further enumerate the machine, what is flag 2?
