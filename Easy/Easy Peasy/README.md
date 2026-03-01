@@ -12,14 +12,15 @@ The first couple of questions are about the ports/services that are running on t
 The first question states:
 - How many ports are open?
 
-To check for open ports on a machine, we can run a simple **Nmap** scan to scan for all open TCP ports on the target machine:
+To check for open ports on a machine, we can run **Nmap** to scan for all open TCP ports on the target machine:
 ```Bash
 nmap -sV -p1-65535 10.66.143.198
 ```
 - ``-sV`` returns the service and the version that is running on that port
 - ``-p1-65535`` scans all ports from 1 through 65535. By default, **Nmap** scans the top 1000 TCP ports but to get a throughough scan of the machine, scanning all possible ports is the appropriate choice of action.
 ![Gif16](https://github.com/user-attachments/assets/bf20b90c-5652-4dee-b968-9e57a5169d60)
-- In total there were 3 ports that were open.
+
+- In total there were **3** ports that were open.
 <img width="836" height="68" alt="image" src="https://github.com/user-attachments/assets/3d3ce26a-298c-4e58-a3c4-8caae2fa6107" />
 
 
@@ -29,13 +30,16 @@ The second question asks:
 <img width="1464" height="901" alt="image" src="https://github.com/user-attachments/assets/11816e88-d96a-4297-b8d6-85578fa13301" />
 
 Since I ran the **Nmap** scan with the ``-sV`` flag, it showed open ports along with the specific service and service version running on the port. In this case, on port 80 a **nginx** web server was running version **1.16.1**.
+
 <img width="845" height="71" alt="image" src="https://github.com/user-attachments/assets/706e0689-56a9-4757-ae7c-d24d58acc198" />
 
 ## Question 3
 The third question states:
 - What is running on the highest port?
 <img width="1475" height="914" alt="image" src="https://github.com/user-attachments/assets/9ed07283-70b3-4efa-a660-27439eb497d8" />
+
 We can look at the **Nmap** scan and we can see that a **Apache web server** is running on port **65524**, which is the highest port that is open.
+
 <img width="836" height="64" alt="image" src="https://github.com/user-attachments/assets/18ffadb9-334e-4067-a7c8-ab913f1e8040" />
 
 
@@ -48,6 +52,7 @@ The first question of Task 2 states:
 - Using Gobuster, find flag1
 
 My thought process was to start enumerating the **nginx** server since that was the first thing I saw when I accessed it through the web browser:
+
 <img width="1476" height="915" alt="image" src="https://github.com/user-attachments/assets/4db5ca87-c5c1-40d3-aadd-82f4ccbaec6a" />
 
 Next I ran **Gobuster** in directory mode to look for hidden subdirectories in the web server:
@@ -56,37 +61,80 @@ Next I ran **Gobuster** in directory mode to look for hidden subdirectories in t
  gobuster dir -u "http://10.67.190.178" -w /usr/share/wordlists/dirb/big.txt -t 64     
  ```
 ![Gif17](https://github.com/user-attachments/assets/7655bb6c-5117-4ae8-b2fb-4648ad31962d)
+
 - Gobuster located two hidden pages, ``hidden`` and ``robots.txt``
 
 ``robots.txt`` is a file that's placed within the root directory of a website that instructs search engine crawlers which pages or sections of a website to crawl (look through) or ignore:
+
 <img width="1472" height="910" alt="image" src="https://github.com/user-attachments/assets/14e2bca0-a1b4-4e9b-89f1-a7e3ba7f7e50" />
+
 What this means:
 - ``User-Agent: *`` applies to all web crawlers
 - ``Disallow: /`` tells crawlers they are not allowed to access anything on the site
 - ``Robots Not Allowed`` just a comment/message
 
 Now let's look at ``http://10.67.190.178/hidden/``:
+
 <img width="1476" height="916" alt="image" src="https://github.com/user-attachments/assets/b6bceac0-085f-4644-a7a3-d353616b37b4" />
 
 Now let's look at the HTML source code for this webpage:
+
 <img width="1452" height="910" alt="image" src="https://github.com/user-attachments/assets/25f875f9-393b-480a-877a-9061575cd946" />
 
 After looking through the HTML I decided to further enumerate the website following this url ``http://10.67.190.178/hidden/``:
+
 ![Gif18](https://github.com/user-attachments/assets/931047bf-6508-4570-bef2-a86103aec9ff)
+
 - Now we can see that there is subdirectory within `hidden` called `whatever`. This caught my attention so I opened the web page on my browser to investigate.
+
 <img width="1475" height="922" alt="image" src="https://github.com/user-attachments/assets/f67febeb-f414-4a11-9761-7fc4619b5636" />
 
 Nothing can be found on the web page so I checked the source code for the web page:
+
 <img width="1470" height="921" alt="image" src="https://github.com/user-attachments/assets/9e7874ed-150b-4710-9f5b-03b31c187277" />
+
 - There is a hidden paragraph element within the HTML that contains a Base64 string
 
 We can decode the string using a tool like CyberChef to decode the text:
+
 <img width="1919" height="938" alt="image" src="https://github.com/user-attachments/assets/1a2fd39b-8a62-40a0-b915-33a36a5b5d7e" />
 
 - The resulting text is the answer to question 1
+
 <img width="841" height="66" alt="image" src="https://github.com/user-attachments/assets/4f421237-a5d4-49c0-bc5e-5f7a6a0f661d" />
 
 
 ## Question 2
 The second question states:
 - Further enumerate the machine, what is flag 2?
+Based on the earlier scan there was also a **Apache** web server running on port 65524 on the target machine which became my next target for investigation.
+
+I ran the following **Gobuster** command:
+```Bash
+gobuster dir -u "http://10.65.188.233:65524" -w /usr/share/wordlists/dirb/common.txt -t 64
+```
+![Gif19](https://github.com/user-attachments/assets/6427909b-0542-4691-a330-8bacd42de968)
+The result was that Gobuster found ``index.html`` and ``robots.txt``. After further investigation through ``robots.txt`` I noticed a MD5 hash in the **User-Agent** section. I then used [hashes.com](https://hashes.com/en/decrypt/hash) to decrypt the string to get the second flag:
+<img width="1373" height="915" alt="image" src="https://github.com/user-attachments/assets/29de7362-b26c-438c-b933-3f4a27bc7f61" />
+<img width="843" height="71" alt="image" src="https://github.com/user-attachments/assets/fc332d23-3a58-4108-b0b7-1c80e752418a" />
+
+
+## Question 3
+
+
+## Question 4
+<img width="1479" height="918" alt="image" src="https://github.com/user-attachments/assets/21b4f6eb-5e7c-4c57-96bc-6f4f55b59572" />
+
+
+
+
+
+In the highlighted section I noticed a hidden paragraph element with the following text:
+- ``its encoded with ba....:ObsJmP173N2X6dOrAgEAL0Vu``
+
+After some trial and error using CyberChef I was able to decode the text from **base62** to regular text. This revealed a hidden directory called ``/n0th1ng3ls3m4tt3r``. I then opened the directory in Firefox and checked out the source code:
+
+
+
+
+
