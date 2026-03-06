@@ -120,9 +120,17 @@ The result was that Gobuster found ``index.html`` and ``robots.txt``. After furt
 
 
 ## Question 3
+The third question states:
+- Crack the hash with easypeasy.txt. What is the flag 3?
+
+After looking through the source code on the Apache root web server, there is a string that contains the answer to question 3:
+<img width="1479" height="919" alt="image" src="https://github.com/user-attachments/assets/b39fb2e3-6df7-4ec5-bfcf-d9e60a2414c2" />
 
 
 ## Question 4
+The fourth question states:
+- What is the hidden directory?
+
 <img width="1479" height="918" alt="image" src="https://github.com/user-attachments/assets/21b4f6eb-5e7c-4c57-96bc-6f4f55b59572" />
 
 
@@ -132,9 +140,31 @@ The result was that Gobuster found ``index.html`` and ``robots.txt``. After furt
 In the highlighted section I noticed a hidden paragraph element with the following text:
 - ``its encoded with ba....:ObsJmP173N2X6dOrAgEAL0Vu``
 
-After some trial and error using CyberChef I was able to decode the text from **base62** to regular text. This revealed a hidden directory called ``/n0th1ng3ls3m4tt3r``. I then opened the directory in Firefox and checked out the source code:
+After some trial and error using CyberChef I was able to decode the text from **base62** to regular text. This revealed a hidden directory called ``/n0th1ng3ls3m4tt3r``.
+
+<img width="842" height="77" alt="image" src="https://github.com/user-attachments/assets/42fa7b13-0ce8-4b5f-bccf-6b28bc938ca7" />
+
+## Question 5
+The fifth question states:
+- Using the wordlist that was provided to you in this task crack the hash and what is the password?
+
+Given we found the hidden directory I visited the subdirectory and I found the hidden hash buried in the source code of the web page:
+<img width="1475" height="918" alt="image" src="https://github.com/user-attachments/assets/26774697-72a2-449d-9f54-01c234ed170b" />
+- The challenge gives us a hint stating that this hash is a ``GOST`` hash
+
+We can download the wordlist that the challenge provides us with along with saving the hash in a file. We can then use **JohnTheRipper** to crack the hash:
+<img width="967" height="254" alt="image" src="https://github.com/user-attachments/assets/80d9b6ea-1a4e-4ea5-8682-be880690ff5f" />
+
+After a successful run the password we get is:
+``mypasswordforthatjob``
+<img width="837" height="82" alt="image" src="https://github.com/user-attachments/assets/2018b18b-8d1d-4c60-b200-5895b70780a8" />
 
 
+## Question 6
+The sixth question states:
+- What is the password to login to the machine via SSH?
 
+At first I was confused on how I was supposed to obtain the SSH login password. Based on the previous question, the hash of the password was located in the source code of the subdirectory ``/n0th1ng3ls3m4tt3r``. I assumed for this question I had to take the same approach so my next focus of attention was to look for images that may contain data that could lead to the password. 
+<img width="1463" height="924" alt="image" src="https://github.com/user-attachments/assets/8598b40d-5166-42a9-9364-aa90db66f35e" />
 
 
