@@ -17,7 +17,7 @@ To check for open ports on a machine, we can run **Nmap** to scan for all open T
 nmap -sV -p1-65535 10.66.143.198
 ```
 - ``-sV`` returns the service and the version that is running on that port
-- ``-p1-65535`` scans all ports from 1 through 65535. By default, **Nmap** scans the top 1000 TCP ports but to get a throughough scan of the machine, scanning all possible ports is the appropriate choice of action.
+- ``-p1-65535`` scans all ports from 1 through 65535. By default, **Nmap** scans the top 1000 TCP ports but to get a thorough scan of the machine, scanning all possible ports is the appropriate choice of action.
 ![Gif16](https://github.com/user-attachments/assets/bf20b90c-5652-4dee-b968-9e57a5169d60)
 
 - In total there were **3** ports that were open.
@@ -85,7 +85,7 @@ After looking through the HTML I decided to further enumerate the website follow
 
 ![Gif18](https://github.com/user-attachments/assets/931047bf-6508-4570-bef2-a86103aec9ff)
 
-- Now we can see that there is subdirectory within `hidden` called `whatever`. This caught my attention so I opened the web page on my browser to investigate.
+- Now we can see that there is subdirectory within `/hidden` called `whatever`. This caught my attention so I opened the web page on my browser to investigate.
 
 <img width="1475" height="922" alt="image" src="https://github.com/user-attachments/assets/f67febeb-f414-4a11-9761-7fc4619b5636" />
 
@@ -164,7 +164,68 @@ After a successful run the password we get is:
 The sixth question states:
 - What is the password to login to the machine via SSH?
 
-At first I was confused on how I was supposed to obtain the SSH login password. Based on the previous question, the hash of the password was located in the source code of the subdirectory ``/n0th1ng3ls3m4tt3r``. I assumed for this question I had to take the same approach so my next focus of attention was to look for images that may contain data that could lead to the password. 
+At first I was confused on how I was supposed to obtain the SSH login password. Based on the previous question, the hash of the password was located in the source code of the subdirectory ``/n0th1ng3ls3m4tt3r``. I assumed for this question I had to take the same approach so my next focus of attention was to look for images that may contain data that could lead to the password.
 <img width="1463" height="924" alt="image" src="https://github.com/user-attachments/assets/8598b40d-5166-42a9-9364-aa90db66f35e" />
 
+- The previous question had the hash of the password in the background image so instead I focused on the image with the binary numbers. I saved this image to my PC for further investigation.
+<img width="1471" height="905" alt="image" src="https://github.com/user-attachments/assets/6a30fe4c-fb0d-4bb0-b592-fd58f5870590" />
+
+Attackers can hide information within an image using a process called **steganography**. My assumption was that the hint to the password had to be embedded within the image, so I used a built-in Kali tool called **steghide** to extract the information out of the image:
+![Gif20](https://github.com/user-attachments/assets/0ec37ccd-e636-4c96-9459-f5e75050d0c8)
+- During the extraction process I had to provide a password which was the password we cracked from the previous question
+- The result was outputted to a file called ``secrettext.txt``
+- We found a username called ``boring`` and a password that's in binary format
+
+To find the password we can simply use CyberChef to convert the binary back into plaintext:
+<img width="950" height="936" alt="image" src="https://github.com/user-attachments/assets/e7e4ceda-feba-4e4e-96ab-18f9c0cef1ed" />
+
+<img width="834" height="77" alt="image" src="https://github.com/user-attachments/assets/04fb9969-24e3-4c2f-9877-f208a0f8de68" />
+
+
+## Question 7
+The seventh question states:
+- What is the user flag?
+
+After finding the SSH login credentials from the previous question, I used the credentials to login to the machine and luckily the flag was in the home directory. The text was encoded with the **ROT13** cipher so using CyberChef I was able to obtain the flag:
+<img width="807" height="432" alt="image" src="https://github.com/user-attachments/assets/132bd068-cc99-4a2b-86fb-7965d2fb844a" />
+<img width="958" height="945" alt="image" src="https://github.com/user-attachments/assets/ab1aa9d2-8d0f-4d48-8094-37113f52a2b6" />
+
+<img width="844" height="77" alt="image" src="https://github.com/user-attachments/assets/03fa2171-f84d-40f4-b8ce-eddf3cf9a60a" />
+
+## Question 8
+The final question states:
+- What is the root flag?
+
+The description of the challenge states to **escalate our privileges through a vulnerable cronjob**. A cronjob is a task that is automated by the OS to execute at a specific time. These tasks include clearing folders, downloading media through a script, etc. These jobs can either be system wide (where it affects all users) or user specific. 
+
+After looking through the system wide cronjobs (in ``/etc/crontab``) one cronjob stood out to me:
+<img width="958" height="945" alt="image" src="https://github.com/user-attachments/assets/f8647505-139e-4482-9667-1ecca717f2af" />
+
+<img width="543" height="73" alt="image" src="https://github.com/user-attachments/assets/b1be9043-1fae-4f8f-9135-4d73546512a9" />
+
+Anything within this cronjob will run as root, so I inserted a reverse shell into ``.mysecretcronjob.sh`` and used ``netcat`` on my machine to get an interactive shell with root privileges:
+<img width="936" height="706" alt="image" src="https://github.com/user-attachments/assets/6d905006-886c-4aea-8c82-048f55b9dbde" />
+
+Once my listener received the connection on port 1000, I verified I was the root user and found the flag in ``.root.txt``:
+<img width="623" height="483" alt="image" src="https://github.com/user-attachments/assets/60262ee5-6c4e-4670-ab68-b03dab774776" />
+<img width="848" height="88" alt="image" src="https://github.com/user-attachments/assets/2a19b76f-58c7-4f6d-849f-e9390b896a45" />
+
+# Lessons learned 📚
+- **Thorough enumeration is critical**. Running a full port scan with ``nmap -p1-65535`` helped identify services running on non-standard ports, such as the Apache server running on port 65524.
+- **Web enumeration often reveals hidden content**. Using Gobuster to brute-force directories uncovered hidden paths like ``/hidden`` and ``/whatever``, which led to discovering encoded data and additional clues.
+- **robots.txt** can reveal useful information during reconnaissance. Even though it is meant for search engine crawlers, it can expose hidden paths or hints that attackers can investigate further.
+- **Source code inspection is important**. Viewing the HTML source revealed hidden elements and encoded strings that were not visible on the page itself.
+- **Understanding common encoding schemes is useful in CTFs**. Techniques such as Base64 decoding, Base62 decoding, ROT13, and binary-to-text conversion were necessary to uncover multiple flags throughout the challenge.
+- **Password cracking tools are essential in penetration testing**. Using John the Ripper with a provided wordlist allowed the GOST hash to be cracked successfully.
+- **Steganography can hide sensitive data in images**. Tools like steghide can extract hidden data embedded within images when the correct passphrase is supplied.
+- **Cronjobs can lead to privilege escalation**. Misconfigured cronjobs that run scripts as root can be exploited by modifying the script to execute malicious commands such as a reverse shell.
+- **Privilege escalation often comes from misconfigurations rather than vulnerabilities**. In this case, writable cronjob scripts allowed execution of commands with root privileges.
+
+# Tools used 🧰
+- Nmap
+- Gobuster
+- CyberChef
+- John the Ripper
+- Steghide
+- Netcat
 
