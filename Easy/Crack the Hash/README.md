@@ -2,6 +2,8 @@
 This challenge goes over basic level hash cracking. There are two levels, each with a couple of hashes that we need to crack. The first level contains some hashes without any salts while the second level 
 ups the difficulty by adding salts to the hashes. 
 
+## Quick Note
+Because I've already worked on the challenge I made sure to delete the contents of John the Ripper's pot file to clear all of the cracked passwords from this challenge. For some of the questions, the files I save the hash will be different. 
 
 # Level 1 
 These are the questions and answers to the Level 1 questions:
@@ -40,4 +42,17 @@ CBFDAC6008F9CAB4083784CBD1874F76618D2A97
 
 We can again use ``hash-identifier`` to determine the type of hash:
 <img width="1462" height="815" alt="image" src="https://github.com/user-attachments/assets/e2f85803-903d-4ece-a31c-4c61744c6c14" />
-- The results indicate that this hash is most likely a ``SHA-1`` hash 
+- The results indicate that this hash is most likely a **SHA-1** hash or a **MySQL SHA-1** hash
+
+We can save this hash to ``hash.txt`` and use **John the Ripper** to crack it:
+
+ ```Bash
+john --format=Raw-SHA1 --wordlist=/usr/share/wordlists/rockyou.txt hash.txt
+```
+
+The cracked hash evaluates to:
+<img width="975" height="192" alt="image" src="https://github.com/user-attachments/assets/8411b2b3-2960-4a2e-904c-7752efd35809" />
+<img width="1247" height="50" alt="image" src="https://github.com/user-attachments/assets/703f94ee-7157-4bcc-a10e-897639a63fb1" />
+
+
+### Question 3
