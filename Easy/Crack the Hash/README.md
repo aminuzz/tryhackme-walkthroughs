@@ -56,3 +56,43 @@ The cracked hash evaluates to:
 
 
 ### Question 3
+The next hash we have to crack is:
+```text
+1C8BFE8F801D79745C4631D09FFF36C82AA37FC4CCE4FC946683D7B336B63032
+```
+
+Using ``hash-identifier`` the hash is most likely a **SHA-256** hash:
+<img width="832" height="548" alt="image" src="https://github.com/user-attachments/assets/f3a8a50f-cdd4-4b0e-be24-13c365ead28c" />
+
+
+Using this hash format with **John the Ripper**, the cracked hash evaluates to **letmein**:
+![image.png](attachment:f7fc683a-acc9-4f74-8dd8-db1a97fb7642:image.png)
+<img width="665" height="52" alt="image" src="https://github.com/user-attachments/assets/04ffab81-3683-4a42-8466-62ac69f48462" />
+
+### Question 4
+The next hash we have to crack is:
+```text
+$2y$12$Dwt1BZj6pcyc3Dy1FWZ5ieeUznr71EeNkJkUlypTsgbX1H68wsRom
+```
+
+Using ``hashid`` I found that this format is likely a **Blowfish (BSD)** hash:
+<img width="688" height="227" alt="image" src="https://github.com/user-attachments/assets/042387ac-2eb5-4299-bfab-e4c101a49977" />
+
+These hashes are difficult to crack because they take a long time to crack. **John the Ripper** is **CPU-based** so it's optimized for cracking passwords on computers without powerful GPUs. Luckily my personal computer has a decently powerful GPU, so I used **hashcat** for this question:
+<img width="1001" height="310" alt="image" src="https://github.com/user-attachments/assets/7f768b93-8cad-4e5b-a2e8-2740d67661d4" />
+The syntax is explained as follows:
+- ``--show`` tells **hashcat** to show the value of the cracked password
+- ``-m 3200`` indicates the mode **hashcat** is using. Similar to the ``--format`` option for **John the Ripper**, it specifies what type of hash to crack. All of the hashes that are supported by **hashcat** are listed on [here](https://hashcat.net/wiki/doku.php?id=example_hashes).
+- ``-a 3`` indicates the attack mode **hashcat** is going to use. This attack mode is called a **mask attack** in which we can specify a password pattern that **hashcat** will use to crack the password.
+- ``?l?l?l?l`` is the mask that we specified. This mask covers all combinations of 4 lowercase character words.
+
+The hash evaluates to the word **bleh**:
+<img width="662" height="52" alt="image" src="https://github.com/user-attachments/assets/73a988d2-90c3-4c1b-a9e2-7e0cd72b8190" />
+
+
+### Question 5
+The final hash for level 1 is:
+```
+279412f945939ba78ce0758d3fd83daa
+```
+
