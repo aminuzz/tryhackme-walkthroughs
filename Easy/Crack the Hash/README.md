@@ -96,3 +96,5 @@ The final hash is:
 I had no luck with trying to crack this password on my virtual machine and my personal computer due to a technical issue so instead I used a website called [crackstation.com](https://crackstation.net/) to do the job for me:
 
 ![Screenshot-10](images/Screenshot-2026-03-13-220917.png)
+
+- **Crackstation** makes it easy to crack hashes since it checks the hash against a large database of previously cracked hashes and common passwords, allowing us to quickly recover the plaintext without needing to perform our own brute-force attack.
