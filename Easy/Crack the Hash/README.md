@@ -91,8 +91,10 @@ The hash evaluates to the word **bleh**:
 
 
 ### Question 5
-The final hash for level 1 is:
+The final hash is:
 ```
 279412f945939ba78ce0758d3fd83daa
 ```
+
+I had no luck with trying to crack this password on my virtual machine and my personal computer due to a technical issue so instead I used a website called [crackstation.com](https://crackstation.net/) to do the job for me:
 
