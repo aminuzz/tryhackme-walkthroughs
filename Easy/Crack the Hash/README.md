@@ -98,4 +98,4 @@ The final hash is:
 ```
 
 I had no luck with trying to crack this password on my virtual machine and my personal computer due to a technical issue so instead I used a website called [crackstation.com](https://crackstation.net/) to do the job for me:
-![alt text](Screenshot-2026-03-13-220917.png)
+![screenshot](/images/Screenshot-2026-03-13-220917.png)
