@@ -98,3 +98,9 @@ I had no luck with trying to crack this password on my virtual machine and my pe
 ![Screenshot-10](images/Screenshot-2026-03-13-220917.png)
 
 - **Crackstation** makes it easy to crack hashes since it checks the hash against a large database of previously cracked hashes and common passwords, allowing us to quickly recover the plaintext without needing to perform our own brute-force attack.
+
+# Level 2
+These are the questions and answers for Level 2
+
+
+### Question 1
