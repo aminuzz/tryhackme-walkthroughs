@@ -15,7 +15,7 @@ The hash we have to crack is:
 ```
 
 We can use tools like `hashid` or `hash-identifier` to identify the type of hash. For this example, I used the latter:
-<img width="1475" height="917" alt="image" src="https://github.com/user-attachments/assets/3589641c-aa42-4c27-a7d9-c7238deaf69f" />
+![Screenshot-1](images/562613007-3589641c-aa42-4c27-a7d9-c7238deaf69f.png)
 
 - The results indicate that the hash is most likely either an **MD5** hash or a **Windows Domain Cached Credentials** hash
 
@@ -31,8 +31,8 @@ john --format=Raw-MD5 --wordlist=/usr/share/wordlists/rockyou.txt hashes.txt
 - ``hashes.txt`` contains our hash.
 
 The cracked hash evaluates to:
-<img width="800" height="162" alt="image" src="https://github.com/user-attachments/assets/cfb87da4-8379-46a7-9744-9916933f4ca9" />
-<img width="1244" height="48" alt="image" src="https://github.com/user-attachments/assets/386de309-814f-494d-a758-1f2e47e2910a" />
+![Screenshot-2](images/562617371-cfb87da4-8379-46a7-9744-9916933f4ca9.png)
+![Screenshot-3](images/Screenshot-2026-03-13-234155.png)
 
 ### Question 2
 The next hash we have to crack is:
@@ -41,7 +41,7 @@ CBFDAC6008F9CAB4083784CBD1874F76618D2A97
 ```
 
 We can again use ``hash-identifier`` to determine the type of hash:
-<img width="1462" height="815" alt="image" src="https://github.com/user-attachments/assets/e2f85803-903d-4ece-a31c-4c61744c6c14" />
+![Screenshot-3](images/562643042-e2f85803-903d-4ece-a31c-4c61744c6c14.png)
 - The results indicate that this hash is most likely a **SHA-1** hash or a **MySQL SHA-1** hash
 
 We can save this hash to ``hash.txt`` and use **John the Ripper** to crack it:
@@ -51,9 +51,7 @@ john --format=Raw-SHA1 --wordlist=/usr/share/wordlists/rockyou.txt hash.txt
 ```
 
 The cracked hash evaluates to:
-<img width="975" height="192" alt="image" src="https://github.com/user-attachments/assets/8411b2b3-2960-4a2e-904c-7752efd35809" />
-<img width="1247" height="50" alt="image" src="https://github.com/user-attachments/assets/703f94ee-7157-4bcc-a10e-897639a63fb1" />
-
+![Screenshot-4](images/Screenshot-2026-03-13-234155.png)
 
 ### Question 3
 The next hash we have to crack is:
@@ -62,13 +60,11 @@ The next hash we have to crack is:
 ```
 
 Using ``hash-identifier`` the hash is most likely a **SHA-256** hash:
-<img width="832" height="548" alt="image" src="https://github.com/user-attachments/assets/f3a8a50f-cdd4-4b0e-be24-13c365ead28c" />
-
+![Screenshot-5](images/563234563-f3a8a50f-cdd4-4b0e-be24-13c365ead28c.png)
 
 Using this hash format with **John the Ripper**, the cracked hash evaluates to **letmein**:
 
-<img width="665" height="52" alt="image" src="https://github.com/user-attachments/assets/04ffab81-3683-4a42-8466-62ac69f48462" />
-
+![Screenshot-6](images/563236404-04ffab81-3683-4a42-8466-62ac69f48462.png)
 ### Question 4
 The next hash we have to crack is:
 ```text
@@ -76,10 +72,11 @@ $2y$12$Dwt1BZj6pcyc3Dy1FWZ5ieeUznr71EeNkJkUlypTsgbX1H68wsRom
 ```
 
 Using ``hashid`` I found that this format is likely a **Blowfish (BSD)** hash:
-<img width="688" height="227" alt="image" src="https://github.com/user-attachments/assets/042387ac-2eb5-4299-bfab-e4c101a49977" />
 
+
+![Screenshot-7](images/563240905-042387ac-2eb5-4299-bfab-e4c101a49977.png)
 These hashes are difficult to crack because they take a long time to crack. **John the Ripper** is **CPU-based** so it's optimized for cracking passwords on computers without powerful GPUs. Luckily my personal computer has a decently powerful GPU, so I used **hashcat** for this question:
-<img width="1001" height="310" alt="image" src="https://github.com/user-attachments/assets/7f768b93-8cad-4e5b-a2e8-2740d67661d4" />
+![Screenshot-8](images/563242612-7f768b93-8cad-4e5b-a2e8-2740d67661d4.png)
 The syntax is explained as follows:
 - ``--show`` tells **hashcat** to show the value of the cracked password
 - ``-m 3200`` indicates the mode **hashcat** is using. Similar to the ``--format`` option for **John the Ripper**, it specifies what type of hash to crack. All of the hashes that are supported by **hashcat** are listed on [here](https://hashcat.net/wiki/doku.php?id=example_hashes).
@@ -88,8 +85,7 @@ The syntax is explained as follows:
 
 The hash evaluates to the word **bleh**:
 
-<img width="662" height="52" alt="image" src="https://github.com/user-attachments/assets/73a988d2-90c3-4c1b-a9e2-7e0cd72b8190" />
-
+![Screenshot-9](images/563249964-73a988d2-90c3-4c1b-a9e2-7e0cd72b8190.png)
 
 ### Question 5
 The final hash is:
@@ -99,4 +95,4 @@ The final hash is:
 
 I had no luck with trying to crack this password on my virtual machine and my personal computer due to a technical issue so instead I used a website called [crackstation.com](https://crackstation.net/) to do the job for me:
 
-![screenshot](images/Screenshot-2026-03-13-220917.png)
+![Screenshot-10](images/Screenshot-2026-03-13-220917.png)
