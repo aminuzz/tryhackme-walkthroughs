@@ -66,7 +66,7 @@ Using ``hash-identifier`` the hash is most likely a **SHA-256** hash:
 
 
 Using this hash format with **John the Ripper**, the cracked hash evaluates to **letmein**:
-![image.png](attachment:f7fc683a-acc9-4f74-8dd8-db1a97fb7642:image.png)
+
 <img width="665" height="52" alt="image" src="https://github.com/user-attachments/assets/04ffab81-3683-4a42-8466-62ac69f48462" />
 
 ### Question 4
@@ -87,6 +87,7 @@ The syntax is explained as follows:
 - ``?l?l?l?l`` is the mask that we specified. This mask covers all combinations of 4 lowercase character words.
 
 The hash evaluates to the word **bleh**:
+
 <img width="662" height="52" alt="image" src="https://github.com/user-attachments/assets/73a988d2-90c3-4c1b-a9e2-7e0cd72b8190" />
 
 
