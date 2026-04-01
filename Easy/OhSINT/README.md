@@ -55,3 +55,51 @@ The answer for this question is **Unilever Wifi**:
 
 
 ## Question 4
+The fourth question states:
+- What is his personal email address?
+
+Let's go back to the user's Github account:
+<img width="1909" height="934" alt="image (2)" src="https://github.com/user-attachments/assets/7fceaca9-5643-46f4-a3e1-f0412d090201" />
+
+The user's email account is **OWoodflint@gmail.com**
+
+## Question 5 
+The fifth question states:
+- What site did you find this on?
+
+This is referring to the previous question so the answer would be **Github**.
+
+
+## Question 6
+The sixth question states:
+- Where has he hone to holiday?
+
+Doing a quick Google search I was able to find a blog post that he made:
+<img width="1917" height="874" alt="image (3)" src="https://github.com/user-attachments/assets/75b68c00-09d1-45c6-a59e-e8553c0b11a0" />
+
+In the post he says that he's in **New York** on vacation which is the answer to this question!
+
+
+## Question 7
+The final question states:
+- What is his password?
+
+For questions like these I immediately assume the password is hardcoded somewhere so I decided to check the source code on the blog post page:
+<img width="1914" height="891" alt="image (4)" src="https://github.com/user-attachments/assets/b0c1f5d4-ab1a-4d45-bc2e-8a38fbeb3d18" />
+
+Luckily my assumption was correct! The answer for this question is ****pennYDr0pper.!****.
+
+
+
+# Lessons learned 📚
+
+* Utilized tools like **exiftool** to find an identity behind an image and used Google to perform searches based on that identity
+* Cross-referencing information from different websites significantly speeds up the investigation process when building a profile on someone
+* Small pieces of data (like usernames, metadata, or posts) can act as pivots to uncover much larger amounts of information
+* Publicly available information can reveal sensitive details if users are not careful about what they share online
+* Understanding the difference between identifiers like **SSID** and **BSSID** is important when working with wireless OSINT
+* Platforms like GitHub, blogs, and social media often unintentionally expose personal details such as emails or locations
+* Viewing page source and inspecting code can reveal hidden information such as credentials or comments left by developers
+* OSINT is less about hacking and more about thinking critically, being patient, and connecting the dots between different data points
+* Always verify information from multiple sources to ensure accuracy and avoid false assumptions
+* This challenge reinforced the importance of operational security (OPSEC) and how easily someone’s digital footprint can be traced
