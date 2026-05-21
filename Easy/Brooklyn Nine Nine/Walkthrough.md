@@ -59,8 +59,23 @@ Following the directions I was able to obtain a root shell and from there I was 
 
 
 ## Lessons learned 📘
-
+- Always begin with proper enumeration since open ports and exposed services can quickly reveal an attack path.
+- Anonymous FTP login can expose sensitive files or usernames that may help with gaining access.
+- Checking the source code of a website can reveal hidden clues, comments, or file paths that are not immediately visible on the webpage itself.
+- Steganography can be used to hide sensitive information inside image files, making tools like stegseek useful during investigations.
+- Weak passphrases are vulnerable to dictionary attacks using common wordlists such as rockyou.txt.
+- mMisconfigured sudo permissions can lead directly to privilege escalation if dangerous binaries are allowed to run as root.
+- GTFOBins is an extremely useful resource for identifying ways to abuse legitimate Linux binaries for privilege escalation.
+- Always check what commands a user can execute with sudo by running sudo -l.
 
 
 
 ## Tools 🧰
+- `nmap` — Port scanning and service enumeration
+- `ftp` — Accessing the anonymous FTP server
+- `wget` — Downloading files from the target website
+- `stegseek` — Cracking steganography passphrases and extracting hidden files
+- `ssh` — Remote login to the target machine
+- `sudo` — Checking elevated command permissions
+- `nano` — Exploited for privilege escalation
+- **GTFOBins** — Reference for Linux binary privilege escalation techniques
