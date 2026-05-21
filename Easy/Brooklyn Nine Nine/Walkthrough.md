@@ -37,7 +37,30 @@ Let's look into what the outputted file contains:
 - We are given the password for the user `holt` which will allow us to access their machine
 
 Before we login as `holt` I checked out the `ftp` server which contained the file I mentioned earlier:
+<img width="1920" height="659" alt="ftp" src="https://github.com/user-attachments/assets/b02eec4f-868f-4183-8b21-eecaf6a60640" />
+<img width="1920" height="259" alt="Screenshot_2026-05-21_10-16-35" src="https://github.com/user-attachments/assets/951c63eb-cfd2-4de4-a7bb-5b9c9051542c" />
+- Now we have another user, `jake`, to look out for
+
+After that I went ahead and logged in as the user `holt` on the machine and luckily the flag was in the home directory:
+<img width="604" height="143" alt="user_flag" src="https://github.com/user-attachments/assets/08646d20-8063-481b-9757-8c5989069eea" />
+
+## Root flag 🚩
+In order to escalate our privileges to the root user, we need to find a misconfiguration or executable with elevated permissions that can be used to gain higher level access. The first thing that came into my mind was to check the `sudoers` file:
+- This file allows us to see what commands a user can run with `sudo`
+<img width="1832" height="200" alt="sudoer_file" src="https://github.com/user-attachments/assets/3b0e84fc-f021-41dd-bc6b-8d09f429449a" />
+
+- In this case the user `holt` can run `/bin/nano` with `sudo` as any user without a password. This is our privilege escalation vector to gain root access on the machine.
+
+I used [gtfobins.org](https://gtfobins.org/) as my reference to execute the privilege escalation technique specifically the page about `nano` shown below:
+<img width="1280" height="825" alt="nano" src="https://github.com/user-attachments/assets/26289ce9-b3c6-44a8-afa9-be3622fef1b5" />
+
+Following the directions I was able to obtain a root shell and from there I was able to get the root flag:
+<img width="850" height="377" alt="root_flag" src="https://github.com/user-attachments/assets/a9c445e9-c3d5-457f-bb6e-cc858a46ad1b" />
+
+
+## Lessons learned 📘
 
 
 
 
+## Tools 🧰
