@@ -6,8 +6,11 @@ This TryHackMe room focuses on basic web exploitation and privilege escalation t
 - How many services are running under port 1000?
 
 I ran a simple `nmap` scan to scan all ports under port 1000:
+```
+nmap -sV -sC -p 1-1000 -T4 10.65.167.220
+```
 <img width="1541" height="910" alt="Screenshot_2026-05-21_16-59-41" src="https://github.com/user-attachments/assets/d6a41861-fbc9-4671-b177-30de28e85d49" />
-- This `nmap` scan was a deep scan which picked up the following:
+- This `nmap` scan picked up the following:
   - `ftp` running on port 21 specifically vsftpd 3.0.3
   - `http` running on port 80 specifically Apache httpd 2.4.18
   - `ssh` wasn't found under port 22 meaning that it most likely is running on port 2222 (the most common alternative)
@@ -28,8 +31,10 @@ Based on our second scan I found that `ssh` is running on an alternative port be
 - What's the password?
 
 Before determining what CVE this application is vulnerable to, I checked out the webpage that this machine is hosting by using `ffuf` to scan for hidden directories
-since based on the `nmap` scan, only the Apache default webpage can be seen:
-
+since based on the `nmap` scan, only the Apache default webpage can be seen so I assumed the rest of the application was hidden:
+```
+ffuf -u http://10.65.167.220/FUZZ -w /usr/share/wordlists/dirb/big.txt -e .php,.txt,.py,.html,.js -mc 200,301,302
+```
 <img width="1912" height="765" alt="ffuf_scan" src="https://github.com/user-attachments/assets/7c2151bc-6478-4801-b580-1e1334c7a6f5" />
 
 - `index.html` is the default Apache web page
@@ -64,7 +69,7 @@ This sums up all of the answers for questions 3 through 5:
 ### Common issues
 Some issues that I came across were the following:
 
-- The exploit contains Python2 code so it's up to you if you want to run the exploit with Python2 and make the necessary changes. In my case, I found it easier making the changes to reflect Python3 syntax since that is what I am accustomed to.
+- The exploit contains Python2 code so it's up to you if you want to run the exploit with Python2 and make the necessary changes. In my case, I found it easier making the changes to reflect Python3 syntax since that is what I am accustomed to. Most of these changes came down to print statements and making sure strings were encoded.
 
 
 - Also when choosing a wordlist for the exploit to use, it's important to make sure the wordlist that you are using is `utf-8` encoded otherwise you'll run into an error where the exploit won't be able to decode the password.
@@ -93,12 +98,15 @@ After moving out of the `mitch` user's home directory, I found another home dire
 - What's the root flag?
 
 Before getting into elevating our privileges, I ran the following command to stabilize my shell:
+```
+python3 -c 'import pty; pty.spawn("/bin/bash")'
+```
 <img width="782" height="90" alt="Screenshot_2026-05-30_18-34-39" src="https://github.com/user-attachments/assets/3e80918f-9e6b-4977-af42-20bd6aa2861e" />
 
-With the shell cleaned up, now I had to find a way to elevate my privileges. Since we know the password of the user `mitch`, I checked the sudoers file to see what they could run with sudo privileges:
+With the shell cleaned up, now I had to find a way to elevate my privileges. Since we know the password of the user `mitch`, I ran `sudo -l` to see what they could run with sudo privileges:
 <img width="862" height="94" alt="Screenshot_2026-05-30_18-37-16" src="https://github.com/user-attachments/assets/914d9526-335b-4603-814a-893d2069e4e2" />
 
-The user `mitch` can run the `vim` binary as the `root` user without a password meaning that every time `vim` is used it's operating with elevated privileges. `vim` itself is a text editor however it has a feature where it allows the user to run shell commands. 
+The user `mitch` can run the `vim` binary as the `root` user without a password meaning that every time `vim` is used it's operating with elevated privileges. `vim` itself is a text editor however it has a feature where it allows the user to run shell commands. This concept can be applied to any binary running with `sudo NOPASSWD` that has a shell escape feature which can be abused. [GTFOBins](https://gtfobins.org/) documents this for dozens of popular binaries and is my main choice for reference.
 
 
 
@@ -108,11 +116,15 @@ Here's the exploit in action:
 - Create a file with `vim` and give it a name
 <img width="609" height="46" alt="Screenshot_2026-05-30_18-51-41" src="https://github.com/user-attachments/assets/267755d3-3602-49fa-abc6-32804aaa102f" />
 
-- Once inside `vim`, make sure you're in **normal** mode and type the following. This will spawn a root shell since we are running `vim` with root privileges
+- Once inside `vim`, make sure you're in **normal** mode and type the following. This will spawn a root shell since we are running `vim` with root privileges:
+```
+:!/bin/bash
+```
 <img width="935" height="798" alt="Screenshot_2026-05-30_18-52-15" src="https://github.com/user-attachments/assets/e052c4c7-42f2-48fb-b232-b73ea855712c" />
 
 
 After gaining access to the root shell, I found the root flag:
+
 <img width="544" height="145" alt="root" src="https://github.com/user-attachments/assets/4fec6c1c-b99c-410a-b7b8-669c2a727d0b" />
 
 
