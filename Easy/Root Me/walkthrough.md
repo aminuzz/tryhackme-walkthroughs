@@ -7,3 +7,14 @@ Once connected to the TryHackMe network, my first order of business was to condu
 ```
 nmap -sV -sC -p- -T4 10.64.143.151
 ```
+<img width="935" height="627" alt="nmap_scan" src="https://github.com/user-attachments/assets/2702547d-36e3-46eb-a50e-044c2f209fe6" />
+
+- Port 22 is open running `ssh` specifically version 8.2p1
+- Port 80 is open running `http` specifically Apache 2.4.41
+- The title of the website is **HackIT - Home**
+
+The next step was to visit the website to see what I was working with:
+<img width="960" height="1002" alt="image" src="https://github.com/user-attachments/assets/fa3ccf9a-be18-4e49-a7c6-726417f024f5" />
+
+The main landing page for the website was bland and didn't have any clues on where to go next so using `ffuf`, I enumerated the website to find hidden webpages:
+```
