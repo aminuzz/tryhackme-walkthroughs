@@ -103,3 +103,20 @@ The one file/binary that caught my attention was `/usr/bin/python2.7` which is o
 
 Now all was left to do is run the command to elevate our privileges and find the root flag:
 <img width="1024" height="745" alt="root_flag" src="https://github.com/user-attachments/assets/a0e1a488-0c48-4999-8484-4284ea21b5b5" />
+
+## Lessons Learned 📝
+- Enumerate broadly, not just for `.php`. Fuzzing with several extensions is what surfaced `panel` and `uploads` — the bland landing page gave nothing away, and a narrow wordlist or extension set would have missed the whole attack path.
+- Fingerprint the backend early. Confirming the site ran on `php` directly informed the payload choice (a PHP reverse shell), saving time guessing at what would actually execute.
+- Upload filters are often shallow. A "PHP is not allowed!" message rarely means all PHP is blocked — it usually blocks the `.php` extension specifically. Trying alternate extensions (`.php5`, `.phtml`, etc.) is a quick, high-value bypass to test.
+- Understand how a reverse shell actually works. The roles are reversed: the target connects back to you, so a listener (`nc`) has to be running first, and the script's IP must point at your machine. The page "hanging" after triggering the shell is expected behavior, not a failure.
+- Stabilize your shell before doing real work. Upgrading the raw `sh` session to a full TTY made enumeration and privesc far smoother — but it depends on the target having python, so it's worth confirming first.
+- When `sudo -l` is off the table, pivot. A reverse shell gives you a session without the user's password, so the usual `sudo -l` check isn't available. SUID enumeration with find ... `-perm -4000` is the natural next move.
+- SUID misconfigurations are a fast track to root. A single owner-root binary with the SUID bit set (here, Python) was enough to spawn a root shell and GTFOBins documents exactly how to abuse common binaries this way.
+
+## Tools/Resources Used 🧰
+- `nmap`
+- `ffuf`
+- `nc`
+- [**pentester PHP reverse shell**](https://pentestmonkey.net/tools/web-shells/php-reverse-shell)
+- [**GTFOBins**](https://gtfobins.org/)
+- [**Hacker's Grimoire**](https://vulp3cula.gitbook.io/hackers-grimoire)
