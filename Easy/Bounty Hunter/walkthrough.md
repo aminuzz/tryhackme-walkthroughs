@@ -41,7 +41,7 @@ The next step was to investigate the website:
 
 
 ## Gaining Access 🔓
-My next thought was to check if the passwords can be used to brute force something. After conducting a web enumeration scan and finding no webpages, I immediately thought of trying to brute force the `ssh` service given that `locks.txt` can be used as a dictionary for our attack. Using `hydra` and `lin` as the username I was able to confirm the login for the machine:
+My next thought was to check if the passwords can be used to brute force something. With the web enumeration scan returning nothing, I pivoted back to the FTP files. `locks.txt` had the shape of a password list, and `task.txt` had handed me a likely username, `lin`, using `hydra` I was able to confirm the login for the machine:
 ```
 hydra -l lin -P locks.txt ssh://10.64.173.227
 ```
