@@ -1,6 +1,8 @@
 # Agent Sudo 👽
 This TryHackMe room is a beginner-friendly challenge that covers a wider range of techniques than most entry-level rooms, making it a solid step up from basic enumeration and privesc. It begins with `nmap` reconnaissance to identify open ports and services, followed by manipulating the **User-Agent** header in an HTTP request to uncover a hidden agent codename. From there, `hydra` is used to brute-force FTP credentials, which surfaces a set of files containing hidden data. Extracting that data requires **steganography** tools to uncover concealed information buried inside the files, eventually yielding valid SSH credentials for an initial foothold. After capturing the user flag, privilege escalation revolves around a known `sudo` vulnerability (**CVE-2019-14287**) that allows a restricted user to run commands as root by manipulating the user ID — reinforcing a diverse set of skills including service enumeration, HTTP header manipulation, credential brute-forcing, steganography, and CVE-based privilege escalation along the way.
 
+### Quick Disclaimer
+You'll notice that the IP addresses are different in different commands and that's because I worked on the challenge in multiple sessions and in each session, the IP address changes.
 
 
 ## Reconnaissance 🔍
@@ -55,5 +57,45 @@ Changing the User-Agent sent the request to the `agent_C_attention.php` which I 
 <img width="1920" height="927" alt="agent_c" src="https://github.com/user-attachments/assets/728c4017-ba34-4eac-95b2-00fa45e6d9bb" />
 - **Agent R** tells **chris** about the deal that's going on along with mentioning something about **agent J** but the most important thing I took away from this message was that **chris's** password was weak
 
+## Brute Forcing 🔓
+With this in mind, **chirs** could be a potential username on the target machine so I attempted to brute  force his `ssh` password using `hydra`:
+```
+hydra -l chris -P /usr/share/wordlists/rockyou.txt ssh://10.66.161.225
+```
+<img width="951" height="548" alt="hydra_attempt" src="https://github.com/user-attachments/assets/4c0cf72c-69e6-42ee-88cb-1abc3aab1f27" />
 
-With this in mind I brute forced **chris's** password using `hydra`:
+
+After some time I realized this wasn't working so instead I attempted to brute force the `ftp` password using the same method:
+```
+hydra -l chris -P /usr/share/wordlists/rockyou.txt ftp://10.66.161.225
+```
+<img width="939" height="560" alt="hydra_attempt2" src="https://github.com/user-attachments/assets/9eeac753-1881-454e-9c1b-c57cca387e9b" />
+
+After a successful brute force attempt, I logged into the `ftp` server using the provided credentials:
+```
+Username: chris
+Password: crystal
+ftp chris@10.66.161.225
+```
+<img width="920" height="282" alt="ftp_login" src="https://github.com/user-attachments/assets/89a24037-4bfb-4eb8-a623-0b9067b85d06" />
+
+Once inside the `ftp` server I listed out the files and found 3 files on the server:
+<img width="954" height="223" alt="ftp_files" src="https://github.com/user-attachments/assets/cfca7529-e32e-4fca-a9f4-570254c2f707" />
+
+After copying them over to my computer, the first file I took a look at was `To_agentJ.txt`:
+<img width="1920" height="228" alt="agentJ" src="https://github.com/user-attachments/assets/af79f9ad-a572-4c73-a92b-63669e4af00b" />
+- Agent C is telling Agent J that their login credentials is stored inside of a image within their directory
+- So I assumed one of the 2 files I found in the `ftp` server contains the login password
+
+Using a tool like `stegseek`, I cracked the passphrase of the image and obtained the hidden message:
+<img width="1295" height="515" alt="stegseek_crack" src="https://github.com/user-attachments/assets/3d3ab138-30de-4cbe-a8d5-499fbfd80eb4" />
+
+
+Now I had a username and a password:
+```
+Username: james
+Password: hackerrules!
+```
+
+Upon logging in with those credentials I was able to get the user flag:
+<img width="963" height="861" alt="user_flag" src="https://github.com/user-attachments/assets/f6797e7e-bc28-4153-89fd-92aec9413682" />
