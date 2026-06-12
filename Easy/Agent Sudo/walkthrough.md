@@ -35,4 +35,25 @@ Once I visited the site on the Burpsuite Browser, the following information show
 
 - On the left hand side the IP address of the website is stated along with what pages we visited; in this case we've only visited the **root page** which is the top level directory/entry point of the website
 - Towards the bottom of the screen you can see the body of the HTTP Request along with the values for each header and the HTTP Response
-- 
+
+The next step is to edit the HTTP request and change the **User-Agent** header by using the **Repeater** module:
+- Before modifying the HTTP request I first sent the original HTTP request to the Repeater module by right clicking on the request and clicking **Send to Repeater**
+
+Once the request is loaded into the Repeater module I chose a random name and modified the **User-Agent** header to reflect that and sent the request:
+<img width="1920" height="1045" alt="repeater_1" src="https://github.com/user-attachments/assets/37da63bf-9236-4d0a-9d45-53486cb790da" />
+
+
+- The reason why **C** worked as the User-Agent is by nature of this challenge (I had to look this up but my best guess is that since we already have **Agent R**, I would assume the codename here would be letters specifically capital letters)
+- Keep in mind changing the User-Agent header to **R** gives us the following response which further supports my claim
+
+<img width="1920" height="1044" alt="repeater" src="https://github.com/user-attachments/assets/db8f1252-812b-4ac2-9dbf-71cd9116ae74" />
+
+
+
+Changing the User-Agent sent the request to the `agent_C_attention.php` which I had to check out:
+<img width="353" height="162" alt="hidden_page" src="https://github.com/user-attachments/assets/bc230e91-8e78-4a8a-8f05-54de71c2bd14" />
+<img width="1920" height="927" alt="agent_c" src="https://github.com/user-attachments/assets/728c4017-ba34-4eac-95b2-00fa45e6d9bb" />
+- **Agent R** tells **chris** about the deal that's going on along with mentioning something about **agent J** but the most important thing I took away from this message was that **chris's** password was weak
+
+
+With this in mind I brute forced **chris's** password using `hydra`:
