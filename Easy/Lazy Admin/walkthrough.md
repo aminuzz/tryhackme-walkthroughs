@@ -45,5 +45,6 @@ Based on the `nmap` scan, the landing page of this particular website is the Apa
 
 Upon checking the HTML I knew that there had to be hidden web pages for this challenge so I used `ffuf` to enumerate the IP address for hidden pages:
 ```
-ffuf -u http://10.65.147.221/FUZZ -w /usr/share/wordlists/dirb/big.txt -e .js,.py,.php,.txt,.html,.css -mc 200,301,302
+ffuf -u http://10.64.186.158/FUZZ -w /usr/share/wordlists/dirb/big.txt -e .js,.py,.php,.txt,.html,.css -mc 200,301,302
 ```
+<img width="1920" height="775" alt="web_enumeration" src="https://github.com/user-attachments/assets/2af6b93b-76e5-4f38-8c70-d3e7733dc973" />
