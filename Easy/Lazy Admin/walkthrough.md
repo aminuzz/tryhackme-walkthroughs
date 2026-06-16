@@ -7,6 +7,8 @@ This TryHackMe room is a beginner-friendly Linux challenge that demonstrates how
 
 
 
+### Quick Disclaimer
+You'll notice that the IP addresses are different in different commands and that's because I worked on the challenge in multiple sessions and in each session, the IP address changes.
 
 
 
