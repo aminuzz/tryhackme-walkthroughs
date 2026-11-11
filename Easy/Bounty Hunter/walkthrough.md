@@ -1,4 +1,9 @@
-# Bounty Hacker 💀
+# Bounty Hacker 💀 -- TryHackMe Writeup
+
+**Difficulty:** Easy
+**Category:** Enumeration / Linux Privilege Escalation
+
+## Introduction
 This TryHackMe room is a beginner-friendly, Cowboy Bebop themed challenge that walks through a classic enumeration-to-root attack chain. It begins with reconnaissance using `nmap` to map out the open ports and services, revealing ftp, ssh, and a web server. From there, anonymous FTP access exposes a pair of text files — a note signed by a user and a wordlist of potential passwords — which together set up an `ssh` brute-force attack using `hydra` to recover valid credentials and gain an initial foothold. After capturing the user flag, the room finishes with privilege escalation by running `sudo -l` to spot a misconfigured `tar` binary that can be executed as root, then abusing it via GTFOBins to spawn a root shell, reinforcing core concepts like service enumeration, anonymous FTP, credential brute-forcing, and sudo-based privilege escalation along the way.
 
 ## Reconnaissance 🔎
@@ -41,6 +46,9 @@ The next step was to investigate the website:
 
 
 ## Gaining Access 🔓
+### Background
+With a wordlist (`locks.txt`) and a likely username (`lin`) already in hand, the two halves of a credential attack were in place. `hydra` automates this by testing each password in the list against a login service, in this case SSH, until one succeeds. Recognizing when you've been handed both a username and a wordlist is the cue to reach for a brute-force tool rather than keep enumerating.
+
 My next thought was to check if the passwords can be used to brute force something. With the web enumeration scan returning nothing, I pivoted back to the FTP files. `locks.txt` had the shape of a password list, and `task.txt` had handed me a likely username, `lin`, using `hydra` I was able to confirm the login for the machine:
 ```
 hydra -l lin -P locks.txt ssh://10.64.173.227
@@ -67,6 +75,8 @@ sudo tar -cf /dev/null /dev/null --checkpoint=1 --checkpoint-action=exec=/bin/sh
 <img width="960" height="259" alt="root_flag" src="https://github.com/user-attachments/assets/254ec358-7677-48b9-a315-76c858823cac" />
 - `tar` has the `--checkpoint` and `--checkpoint-action` flags that specify an action when a checkpoint is hit during archive processing. In this case it literally tells `tar` to execute a shell at that checkpoint so when `tar` runs as `root` via sudo, that shell inherits `root`
 
+## Flag Capture 🏁
+Both flags were recovered: the user flag after the `hydra`/SSH login as `lin`, and the root flag once the `tar` sudo misconfiguration was abused via GTFOBins to spawn a root shell.
 
 ## Lessons Learned 📚
 - **Enumerate every service, not just the web server.** The instinct is often to go straight for HTTP, but here the website was a complete dead end however the real foothold came from the FTP server. Checking each open port the `nmap` scan reported is what surfaced the anonymous FTP access.

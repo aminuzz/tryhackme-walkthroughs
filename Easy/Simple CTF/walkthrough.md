@@ -1,4 +1,9 @@
-# Simple CTF
+# Simple CTF -- TryHackMe Writeup
+
+**Difficulty:** Easy
+**Category:** Web Exploitation / Linux Privilege Escalation
+
+## Introduction
 This TryHackMe room focuses on basic web exploitation and privilege escalation techniques in a beginner-friendly environment. The challenge starts with reconnaissance using tools like `nmap` to identify open ports and services running on the target machine. From there, you investigate the CMS in use, determine which known CVE it is vulnerable to, and exploit the vulnerability to gain initial access. After establishing a foothold, the room guides you through simple enumeration and privilege escalation steps, including leveraging `vim` to obtain elevated privileges, while answering questions along the way to reinforce the concepts being practiced.
 
 
@@ -127,6 +132,8 @@ After gaining access to the root shell, I found the root flag:
 
 <img width="544" height="145" alt="root" src="https://github.com/user-attachments/assets/4fec6c1c-b99c-410a-b7b8-669c2a727d0b" />
 
+## Flag Capture 🏁
+Both flags were recovered: the user flag after logging in as `mitch` with the credentials recovered from the CVE-2019-9053 SQL injection, and the root flag after abusing `mitch`'s passwordless `sudo vim` permission (via the `:!/bin/bash` shell escape) to spawn a root shell.
 
 ## Lessons Learned 📘
 - Don't assume default ports. When ssh didn't appear on port 22, checking common alternatives (2222) confirmed it was simply relocated. Always scan the full range rather than trusting defaults.

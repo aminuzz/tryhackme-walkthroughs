@@ -1,4 +1,9 @@
-# Easy Peasy 🕶️
+# Easy Peasy 🕶️ -- TryHackMe Writeup
+
+**Difficulty:** Easy
+**Category:** Web Enumeration / Encoding / Steganography / Cron Privilege Escalation
+
+## Introduction
 This challenge had me use tools like **Nmap** and **GoBuster** to locate a hidden directory on a target machine and answering some questions based on the results I found. From there we can execute our privileges through a vulnerable **cron** job to get the final flag.
 
 
@@ -209,6 +214,9 @@ Anything within this cronjob will run as root, so I inserted a reverse shell int
 Once my listener received the connection on port 1000, I verified I was the root user and found the flag in ``.root.txt``:
 <img width="623" height="483" alt="image" src="https://github.com/user-attachments/assets/60262ee5-6c4e-4670-ab68-b03dab774776" />
 <img width="848" height="88" alt="image" src="https://github.com/user-attachments/assets/2a19b76f-58c7-4f6d-849f-e9390b896a45" />
+
+# Flag Capture 🏁
+Both flags were recovered: the user flag from `boring`'s home directory (ROT13-decoded) after chaining web enumeration, hash cracking, and steganography into SSH credentials, and the root flag from `.root.txt` after abusing a world-writable root cronjob (`.mysecretcronjob.sh`) to catch a root reverse shell.
 
 # Lessons learned 📚
 - **Thorough enumeration is critical**. Running a full port scan with ``nmap -p1-65535`` helped identify services running on non-standard ports, such as the Apache server running on port 65524.

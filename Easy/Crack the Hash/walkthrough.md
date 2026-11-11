@@ -1,4 +1,9 @@
-# Crack the Hash 🔒
+# Crack the Hash 🔒 -- TryHackMe Writeup
+
+**Difficulty:** Easy
+**Category:** Password Cracking / Hash Analysis
+
+## Introduction
 This challenge covers the basics of hash cracking and is divided into two levels, each containing several hashes that must be cracked. The first level consists of hashes without salts, making them easier to crack, while the second level increases the difficulty by introducing salted hashes.
 
 ## Quick Note

@@ -1,4 +1,9 @@
-# Root Me 💻
+# Root Me 💻 -- TryHackMe Writeup
+
+**Difficulty:** Easy
+**Category:** Web Exploitation / Linux Privilege Escalation
+
+## Introduction
 This TryHackMe room is a beginner-friendly challenge centered on web exploitation and privilege escalation. It begins with reconnaissance using tools like nmap to map out open ports and services, followed by directory enumeration to uncover a hidden file-upload page. From there, you bypass the upload filter to deliver a PHP reverse shell and gain an initial foothold on the machine. After capturing the user flag, the room walks you through privilege escalation by identifying a misconfigured SUID binary and abusing it to spawn a root shell, reinforcing core concepts like enumeration, filter evasion, and Linux privilege escalation along the way.
 
 
@@ -49,6 +54,7 @@ The final webpage I looked at was `uploads`:
 - This directory is where all of the uploads are saved on the server
 
 ## Gaining Initial Access 🔓
+### Background
 After looking through all of the webpages/directories, the next step was to find a way to gain access to the system. Knowing we have an `upload` webpage, we can use this to our advantage and execute a **Unrestricted File Upload** attack. If the `upload` webpage doesn't validate a file's content, type, or extension an attacker can upload a **reverse shell** to the server which allows the attacker to execute **remote code execution** (arbitrary commands) onto the server which can lead to full system compromise. 
 
 - A **reverse shell** acts like an SSH connection but the roles are reversed. Instead of the attacker initiating the connection, the target machine initiates a connection to the attacker over TCP/UDP. Using tools like `netcat` is crucial for this to work since it provides the TCP listener for the shell to connect to. Once connected, you're granted a basic `sh` terminal session.
@@ -92,6 +98,7 @@ After cleaning up the shell, I was able to find the 1st flag in `/var/www/user.t
 <img width="1283" height="190" alt="flag_1" src="https://github.com/user-attachments/assets/103f2b5a-8786-4b74-ae15-1aa99b4c5ec9" />
 
 ## Privilege Escalation
+### Background
 The final step was to find a way to elevate our privileges. In most cases, I usually check what the user can run with `sudo` by running `sudo -l` however we gained access by using a reverse shell and we do not know the user's `sudo` password so that wouldn't work.
 
 The next course of action was to check for any file/binary that has the **SUID** bit set. The **SUID** bit allows a user to execute a file with the permissions of the file owner rather than the permissions of the user. If a file owned by the `root` user is misconfigured with the **SUID** bit, this can allow a underprivileged user to elevate their privileges as `root` and gain full system control. 
@@ -109,6 +116,9 @@ The one file/binary that caught my attention was `/usr/bin/python2.7` which is o
 
 Now all was left to do is run the command to elevate our privileges and find the root flag:
 <img width="1024" height="745" alt="root_flag" src="https://github.com/user-attachments/assets/a0e1a488-0c48-4999-8484-4284ea21b5b5" />
+
+## Flag Capture 🏁
+Both flags were recovered: the user flag from `/var/www/user.txt` after catching the PHP reverse shell, and the root flag after abusing the SUID-set `/usr/bin/python2.7` binary (via GTFOBins) to spawn a root shell.
 
 ## Lessons Learned 📝
 - Enumerate broadly, not just for `.php`. Fuzzing with several extensions is what surfaced `panel` and `uploads` — the bland landing page gave nothing away, and a narrow wordlist or extension set would have missed the whole attack path.

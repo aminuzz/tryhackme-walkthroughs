@@ -1,4 +1,9 @@
-# Agent Sudo 👽
+# Agent Sudo 👽 -- TryHackMe Writeup
+
+**Difficulty:** Easy
+**Category:** Web / Steganography / CVE-based Privilege Escalation
+
+## Introduction
 This TryHackMe room is a beginner-friendly challenge that covers a wider range of techniques than most entry-level rooms, making it a solid step up from basic enumeration and privesc. It begins with `nmap` reconnaissance to identify open ports and services, followed by manipulating the **User-Agent** header in an HTTP request to uncover a hidden agent codename. From there, `hydra` is used to brute-force FTP credentials, which surfaces a set of files containing hidden data. Extracting that data requires **steganography** tools to uncover concealed information buried inside the files, eventually yielding valid SSH credentials for an initial foothold. After capturing the user flag, privilege escalation revolves around a known `sudo` vulnerability (**CVE-2019-14287**) that allows a restricted user to run commands as root by manipulating the user ID — reinforcing a diverse set of skills including service enumeration, HTTP header manipulation, credential brute-forcing, steganography, and CVE-based privilege escalation along the way.
 
 ### Quick Disclaimer
@@ -57,6 +62,9 @@ Changing the User-Agent redirected the request to `agent_C_attention.php`:
 - **Agent R** addresses **chris** directly and mentions that his password is weak — making `chris` a strong candidate for a username on the target machine
 
 ## Brute Forcing 🔓
+### Background
+With `chris` surfaced as a likely username from Agent R's message, the next step was a credential brute-force. `hydra` tests each password in a wordlist against a login service until one succeeds. When the first targeted service doesn't bite, the same username and wordlist are worth trying against other authenticated services on the box, since reused credentials are common.
+
 `chris` was a likely username on the target machine so I attempted to brute force his `ssh` password using `hydra`:
 ```
 hydra -l chris -P /usr/share/wordlists/rockyou.txt ssh://10.66.161.225
@@ -116,6 +124,9 @@ Returning to the `sudo -l` output, researching the exact permission string surfa
 
 Executing the exploit returned a root shell and the root flag:
 <img width="1919" height="465" alt="root_flag" src="https://github.com/user-attachments/assets/0be85f6b-9382-4b40-a20d-ecb5529d33af" />
+
+## Flag Capture 🏁
+Both flags were recovered: the user flag after logging in as `james` with the SSH credentials recovered via steganography, and the root flag after exploiting **CVE-2019-14287** (`sudo -u#-1`) to bypass the "except root" restriction and spawn a root shell.
 
 ## Lessons Learned 📚
 
