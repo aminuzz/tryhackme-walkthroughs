@@ -98,8 +98,8 @@ This bypassed the restriction and triggered the shell, granting a foothold on th
 
 
 The shell was then upgraded to a fully interactive TTY, and the user flag was located shortly after:
-
 <img width="452" height="17" alt="image(17)" src="https://github.com/user-attachments/assets/f2456506-9692-45f4-8f5b-c1f69858fa9a" />
+
 <img width="369" height="69" alt="image(18)" src="https://github.com/user-attachments/assets/26b6600e-6c1b-4fca-9517-a2c178984c4f" />
 
 
@@ -120,15 +120,18 @@ The script ran two system-level commands, one of which called `sh` to execute `/
 
 ### Exploiting the Sudo Misconfiguration
 Since `/etc/copy.sh` was already structured as a reverse shell, it only needed to be edited to point at the attacking machine's IP and listening port:
+
 <img width="859" height="30" alt="image(23)" src="https://github.com/user-attachments/assets/2681b635-cd87-4318-a596-648685adb30c" />
 
 
 Running the `perl` script through `sudo` (matching the exact syntax listed in the sudoers file, since any deviation causes it to fail) then triggered `/etc/copy.sh` as `root`, delivering a root-level reverse shell:
+
 <img width="585" height="28" alt="image(24)" src="https://github.com/user-attachments/assets/c1a07b57-b4e3-48fa-a69e-093cf0ccb781" />
 
 
 ## Flag Capture
 With a root shell established, the final flag was retrieved, completing the room.
+
 <img width="340" height="58" alt="image(25)" src="https://github.com/user-attachments/assets/f8387fb3-e2f7-480f-8ffd-60130393852f" />
 
 
