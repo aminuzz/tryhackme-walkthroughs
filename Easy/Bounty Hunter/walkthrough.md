@@ -1,6 +1,6 @@
-# Bounty Hacker 💀 -- TryHackMe Writeup
+# Bounty Hacker -- TryHackMe Writeup
 
-**Difficulty:** Easy
+**Difficulty:** Easy  
 **Category:** Enumeration / Linux Privilege Escalation
 
 ## Introduction
@@ -12,6 +12,7 @@ The first step was to perform a `nmap` scan on the machine to find open ports an
 nmap -sV -sC -T4 10.64.173.227
 ```
 <img width="1920" height="965" alt="nmap_scan" src="https://github.com/user-attachments/assets/b091e122-7db8-4960-afd2-cf62cc2ac0e9" />
+
 - port 21 has an `ftp` server running version **vsftpd 3.0.5**
 - port 22 in typical fashion running `ssh` specifically `OpenSSH 8.2p1`
 - port 80 is running an Apache web server (`http`) specifically version **2.4.41**
