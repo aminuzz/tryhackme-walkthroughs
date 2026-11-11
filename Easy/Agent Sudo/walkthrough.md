@@ -1,6 +1,6 @@
-# Agent Sudo 👽 -- TryHackMe Writeup
+# Agent Sudo -- TryHackMe Writeup
 
-**Difficulty:** Easy
+**Difficulty:** Easy  
 **Category:** Web / Steganography / CVE-based Privilege Escalation
 
 ## Introduction
@@ -10,7 +10,7 @@ This TryHackMe room is a beginner-friendly challenge that covers a wider range o
 You'll notice that the IP addresses are different in different commands and that's because I worked on the challenge in multiple sessions and in each session, the IP address changes.
 
 
-## Reconnaissance 🔍
+## Reconnaissance
 The first step was to run a `nmap` scan to enumerate the machine and find open ports and services running on the machine:
 ```
 nmap -sV -sC -T4 10.64.142.8
@@ -56,12 +56,12 @@ Once the request was loaded into the Repeater module I modified the **User-Agent
 
 <img width="1920" height="1044" alt="repeater" src="https://github.com/user-attachments/assets/db8f1252-812b-4ac2-9dbf-71cd9116ae74" />
 
-Changing the User-Agent redirected the request to `agent_C_attention.php`:
+Changing the User-Agent redirected the request to `agent_C_attention.php`:  
 <img width="353" height="162" alt="hidden_page" src="https://github.com/user-attachments/assets/bc230e91-8e78-4a8a-8f05-54de71c2bd14" />
 <img width="1920" height="927" alt="agent_c" src="https://github.com/user-attachments/assets/728c4017-ba34-4eac-95b2-00fa45e6d9bb" />
 - **Agent R** addresses **chris** directly and mentions that his password is weak — making `chris` a strong candidate for a username on the target machine
 
-## Brute Forcing 🔓
+## Brute Forcing 
 ### Background
 With `chris` surfaced as a likely username from Agent R's message, the next step was a credential brute-force. `hydra` tests each password in a wordlist against a login service until one succeeds. When the first targeted service doesn't bite, the same username and wordlist are worth trying against other authenticated services on the box, since reused credentials are common.
 
@@ -105,12 +105,13 @@ After logging in I captured the user flag:
 <img width="963" height="861" alt="user_flag" src="https://github.com/user-attachments/assets/f6797e7e-bc28-4153-89fd-92aec9413682" />
 
 
-## Privilege Escalation ⬆️
+## Privilege Escalation 
 The final step was to escalate privileges. The first check was to review the user's `sudo` permissions:
 ```
 sudo -l
 ```
 <img width="1919" height="173" alt="sudo_l" src="https://github.com/user-attachments/assets/10298e49-5f3f-47a7-9f90-90cc2566ea1a" />
+
 - The user **james** can run `/bin/bash` with `sudo` as any user except the root user
 
 The next step was to check for misconfigured binaries with their SUID bit set:
@@ -118,6 +119,7 @@ The next step was to check for misconfigured binaries with their SUID bit set:
 find / -type f -perm -4000 2>/dev/null
 ```
 <img width="726" height="914" alt="perm_4000" src="https://github.com/user-attachments/assets/83817501-2480-4aaa-939d-9e9f4ec0fa73" />
+
 - After cross-referencing the results against [GTFOBins](https://gtfobins.github.io/), none of the binaries returned a viable exploitation path
 
 Returning to the `sudo -l` output, researching the exact permission string surfaced **CVE-2019-14287** — a flaw in sudo's user ID validation where passing `-u#-1` causes sudo to resolve the user ID to 0 (root), bypassing the "except root" restriction entirely. The full exploit details can be found on [Exploit-DB](https://www.exploit-db.com/exploits/47502).
@@ -125,10 +127,10 @@ Returning to the `sudo -l` output, researching the exact permission string surfa
 Executing the exploit returned a root shell and the root flag:
 <img width="1919" height="465" alt="root_flag" src="https://github.com/user-attachments/assets/0be85f6b-9382-4b40-a20d-ecb5529d33af" />
 
-## Flag Capture 🏁
+## Flag Capture 
 Both flags were recovered: the user flag after logging in as `james` with the SSH credentials recovered via steganography, and the root flag after exploiting **CVE-2019-14287** (`sudo -u#-1`) to bypass the "except root" restriction and spawn a root shell.
 
-## Lessons Learned 📚
+## Lessons Learned
 
 - **Not all FTP servers allow anonymous login — enumerate before assuming.** Previous rooms like Bounty Hacker had anonymous FTP wide open, but here it was locked down. Trying it and moving on quickly is the right habit rather than forcing a path that isn't there.
 
@@ -146,7 +148,7 @@ Both flags were recovered: the user flag after logging in as `james` with the SS
 
 - **CVE-2019-14287 works because `sudo` doesn't validate the user ID.** Passing `-u#-1` tells sudo to run as user ID -1, which the kernel wraps around to UID 0 (root). The restriction "except root" only checks by name, not by the numeric ID — a subtle implementation flaw that bypasses what looks like a well-intentioned policy.
 
-## Tools Used 🛠️
+## Tools Used
 
 - **`nmap`** — Initial reconnaissance with `-sV -sC -T4` to enumerate open ports, service versions, and pull the HTTP page title via default NSE scripts.
 - **Burpsuite** — Used the Target module to map the site and the Repeater module to manually modify the `User-Agent` HTTP request header to reveal the hidden agent page.
