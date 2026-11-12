@@ -60,7 +60,8 @@ Walking through the key parts of the script shows exactly how that concept is im
 
 The exploit takes a target URL and optionally a wordlist, and sends its payloads to the vulnerable `News` module endpoint (`moduleinterface.php`), injecting SQL through the `m1_idlist` parameter:
 
-<!-- SCREENSHOT: exploit argument parsing / target URL setup -->
+<img width="1078" height="276" alt="image" src="https://github.com/user-attachments/assets/0c1238fc-d0a6-4d51-966b-cad1f3bba41c" />
+
 
 - The script is pointed at the site with `-u`, and `--crack` plus `-w <wordlist>` enables password cracking after the hash is dumped.
 - Every payload is sent to the same vulnerable parameter; only the injected SQL condition changes.
