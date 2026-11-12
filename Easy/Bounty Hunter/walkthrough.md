@@ -1,6 +1,6 @@
 # Bounty Hacker -- TryHackMe Writeup
 
-**Difficulty:** Easy
+**Difficulty:** Easy  
 **Category:** Enumeration / Linux Privilege Escalation
 
 ## Introduction
