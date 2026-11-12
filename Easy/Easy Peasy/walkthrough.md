@@ -1,6 +1,6 @@
 # Easy Peasy -- TryHackMe Writeup
 
-**Difficulty:** Easy
+**Difficulty:** Easy  
 **Category:** Web Enumeration / Encoding / Steganography / Cron Privilege Escalation
 
 ## Introduction

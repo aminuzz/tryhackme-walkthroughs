@@ -1,6 +1,6 @@
 # OhSINT -- TryHackMe Writeup
 
-**Difficulty:** Easy
+**Difficulty:** Easy  
 **Category:** OSINT (Open Source Intelligence)
 
 ## Introduction

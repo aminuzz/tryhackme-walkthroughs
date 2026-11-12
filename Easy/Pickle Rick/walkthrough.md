@@ -1,6 +1,6 @@
 # Pickle Rick -- TryHackMe Writeup
 
-**Difficulty:** Easy
+**Difficulty:** Easy  
 **Category:** Web Exploitation / Linux Privilege Escalation
 
 ## Introduction

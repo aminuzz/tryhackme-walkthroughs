@@ -1,6 +1,6 @@
 # Crack the Hash -- TryHackMe Writeup
 
-**Difficulty:** Easy
+**Difficulty:** Easy  
 **Category:** Password Cracking / Hash Analysis
 
 ## Introduction

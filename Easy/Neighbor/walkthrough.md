@@ -1,6 +1,6 @@
 # Neighbor -- TryHackMe Writeup
 
-**Difficulty:** Easy
+**Difficulty:** Easy  
 **Category:** Web Exploitation / Broken Access Control
 
 ## Introduction

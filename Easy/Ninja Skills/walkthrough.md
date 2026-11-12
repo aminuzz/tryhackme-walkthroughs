@@ -1,6 +1,6 @@
 # Ninja Skills -- TryHackMe Writeup
 
-**Difficulty:** Easy
+**Difficulty:** Easy  
 **Category:** Linux Fundamentals / Enumeration
 
 ## Introduction

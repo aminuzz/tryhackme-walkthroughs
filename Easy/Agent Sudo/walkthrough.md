@@ -1,6 +1,6 @@
 # Agent Sudo -- TryHackMe Writeup
 
-**Difficulty:** Easy
+**Difficulty:** Easy  
 **Category:** Web / Steganography / CVE-based Privilege Escalation
 
 ## Introduction
