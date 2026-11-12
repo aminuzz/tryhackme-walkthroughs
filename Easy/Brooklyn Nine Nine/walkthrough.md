@@ -1,6 +1,6 @@
 # Brooklyn Nine Nine -- TryHackMe Writeup
 
-**Difficulty:** Easy
+**Difficulty:** Easy  
 **Category:** Web / Steganography / Linux Privilege Escalation
 
 ## Introduction
