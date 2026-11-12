@@ -55,6 +55,41 @@ Before running the exploit, I looked up what it actually does:
 
 CVE-2019-9053 is a time-based blind SQL injection in CMS Made Simple 2.2.8. In a blind injection, the application does not return query results directly, so the attacker cannot simply read data off the page. Instead, the exploit injects SQL that includes a conditional time delay, for example, "if the next character of the password hash is X, wait 5 seconds." By measuring how long the server takes to respond, the exploit infers each character one at a time, gradually reconstructing the administrator's username and password reset hash (and, with a wordlist, cracking the password). It is slow by nature, since each character requires its own timed request, but it reliably extracts data the application never intended to expose.
 
+### Breaking Down the Exploit
+Walking through the key parts of the script shows exactly how that concept is implemented.
+
+The exploit takes a target URL and optionally a wordlist, and sends its payloads to the vulnerable `News` module endpoint (`moduleinterface.php`), injecting SQL through the `m1_idlist` parameter:
+
+<!-- SCREENSHOT: exploit argument parsing / target URL setup -->
+
+- The script is pointed at the site with `-u`, and `--crack` plus `-w <wordlist>` enables password cracking after the hash is dumped.
+- Every payload is sent to the same vulnerable parameter; only the injected SQL condition changes.
+
+At the core is the time-based extraction loop. For each character position, the script asks the database a yes/no question and forces it to `SLEEP` when the answer is true:
+
+<!-- SCREENSHOT: the time-based injection / SLEEP payload -->
+
+- The injected SQL uses a `CASE WHEN ... THEN SLEEP(x) ELSE ... END` structure comparing one character of the target value (via `ASCII(SUBSTRING(...))`) against a guess.
+- The script measures the server's response time: a delayed response means the guessed character was correct, while an immediate response means it was wrong. This is why no data is ever printed on the page, the answer is carried entirely by how long the request takes.
+
+Before anything else, the exploit extracts the password salt, because CMS Made Simple stores passwords as `md5(salt + password)`:
+
+<!-- SCREENSHOT: salt extraction -->
+
+- Without the salt, a cracked hash would be meaningless, so the salt is dumped first using the same timed technique.
+
+It then dumps the admin's username, email, and password hash one character at a time:
+
+<!-- SCREENSHOT: username / email / password-hash extraction -->
+
+- Each field is reconstructed character by character, looping over possible ASCII values until the timing confirms a match, then moving to the next position.
+
+Finally, if a wordlist is supplied, the script cracks the recovered hash offline:
+
+<!-- SCREENSHOT: password-cracking routine -->
+
+- For each word in the wordlist it computes `md5(salt + word)` and compares it to the dumped hash. A match reveals the plaintext password (`secret`), which is why the salt had to be recovered first.
+
 ### Running the Exploit
 Running the exploit recovers the credentials:
 
