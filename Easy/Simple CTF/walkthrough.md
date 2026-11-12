@@ -53,43 +53,33 @@ Before running the exploit, I looked up what it actually does:
 
 <img width="542" height="338" alt="Screenshot 2026-05-21 at 17-55-01 cms made simple sql injection exploit 2 2 8 - Google Search" src="https://github.com/user-attachments/assets/687d0eb0-7585-4910-b6d4-963aca6765f9" />
 
-CVE-2019-9053 is a time-based blind SQL injection in CMS Made Simple 2.2.8. In a blind injection, the application does not return query results directly, so the attacker cannot simply read data off the page. Instead, the exploit injects SQL that includes a conditional time delay, for example, "if the next character of the password hash is X, wait 5 seconds." By measuring how long the server takes to respond, the exploit infers each character one at a time, gradually reconstructing the administrator's username and password reset hash (and, with a wordlist, cracking the password). It is slow by nature, since each character requires its own timed request, but it reliably extracts data the application never intended to expose.
+**CVE-2019-9053** is a time-based blind SQL injection in CMS Made Simple 2.2.8. In a blind injection, the application does not return query results directly, so the attacker cannot simply read data off the page. Instead, the exploit injects SQL that includes a conditional time delay, for example, "if the next character of the password hash is X, wait 5 seconds." By measuring how long the server takes to respond, the exploit infers each character one at a time, gradually reconstructing the administrator's username and password reset hash (and, with a wordlist, cracking the password). It is slow by nature, since each character requires its own timed request, but it reliably extracts data the application never intended to expose.
 
 ### Breaking Down the Exploit
 Walking through the key parts of the script shows exactly how that concept is implemented.
+<img width="750" height="154" alt="image" src="https://github.com/user-attachments/assets/ac0bee68-c474-404a-b710-997eefb8830d" />
+- `url_vuln` is the vulnerable endpoint: the News module's `moduleinterface.php`, where the injectable `m1_idlist` parameter lives.
+- `dictionary` is the set of characters the script guesses from, one position at a time.
+- `TIME` is the sleep duration in seconds used as the signal. If the server takes at least this long to respond, the guess was correct.
+<img width="1027" height="586" alt="image" src="https://github.com/user-attachments/assets/db0be594-2780-44ed-8605-5519379de56b" />
 
-The exploit takes a target URL and optionally a wordlist, and sends its payloads to the vulnerable `News` module endpoint (`moduleinterface.php`), injecting SQL through the `m1_idlist` parameter:
+- The payload injected into `m1_idlist` is `and (select sleep(1) from cms_users where password like 0x<hex>25 and user_id like 0x31) -- `.
+- The guessed prefix is sent as hex, and the trailing `25` is hex for `%` (the SQL `LIKE` wildcard), so `like 0x...25` means "starts with this prefix." `user_id like 0x31` targets user ID 1 (`0x31` is hex for `"1"`), the admin account.
+- If the prefix matches, the database runs `SLEEP(1)` and the response is delayed. The script times the request, so a delay means the character was correct and no delay means it was wrong.
+<img width="1640" height="563" alt="image" src="https://github.com/user-attachments/assets/8ac9fa67-66f3-4da1-861c-94c3a2e134e2" />
 
-<img width="1078" height="276" alt="image" src="https://github.com/user-attachments/assets/0c1238fc-d0a6-4d51-966b-cad1f3bba41c" />
+- The salt is dumped first using the same timing technique, against `cms_siteprefs where sitepref_name like 0x736974656d61736b` — that hex decodes to `sitemask`, the preference that stores the salt.
+- It has to come first because CMS Made Simple stores passwords as `md5(salt + password)`, so the salt is required to crack the hash later.
+<img width="193" height="98" alt="image" src="https://github.com/user-attachments/assets/2a2b3668-f97f-4a99-8e6d-1e6bcb2a0cdc" />
 
+- Each function reconstructs a different `cms_users` column for user ID 1 (username, email, then the password hash), one character at a time using the same timed `LIKE` technique.
+- The order is deliberate: salt first because it is needed for cracking, then the account details, and the password hash last.
+<img width="621" height="297" alt="image" src="https://github.com/user-attachments/assets/2ebcb051-402f-488a-be7e-8bfdd16b23c2" />
 
-- The script is pointed at the site with `-u`, and `--crack` plus `-w <wordlist>` enables password cracking after the hash is dumped.
-- Every payload is sent to the same vulnerable parameter; only the injected SQL condition changes.
+- If a wordlist is supplied with `--crack -w`, the script cracks the dumped hash offline: for each word it computes `md5(salt + word)` and compares it to the extracted hash.
+- A match reveals the plaintext password (`secret`), which is exactly why the salt had to be recovered first.
+- As written, `crack_password()` does not work as intended due to an encoding issue with the wordlist (marked in the exploit file). This is covered in the next section.
 
-At the core is the time-based extraction loop. For each character position, the script asks the database a yes/no question and forces it to `SLEEP` when the answer is true:
-
-<!-- SCREENSHOT: the time-based injection / SLEEP payload -->
-
-- The injected SQL uses a `CASE WHEN ... THEN SLEEP(x) ELSE ... END` structure comparing one character of the target value (via `ASCII(SUBSTRING(...))`) against a guess.
-- The script measures the server's response time: a delayed response means the guessed character was correct, while an immediate response means it was wrong. This is why no data is ever printed on the page, the answer is carried entirely by how long the request takes.
-
-Before anything else, the exploit extracts the password salt, because CMS Made Simple stores passwords as `md5(salt + password)`:
-
-<!-- SCREENSHOT: salt extraction -->
-
-- Without the salt, a cracked hash would be meaningless, so the salt is dumped first using the same timed technique.
-
-It then dumps the admin's username, email, and password hash one character at a time:
-
-<!-- SCREENSHOT: username / email / password-hash extraction -->
-
-- Each field is reconstructed character by character, looping over possible ASCII values until the timing confirms a match, then moving to the next position.
-
-Finally, if a wordlist is supplied, the script cracks the recovered hash offline:
-
-<!-- SCREENSHOT: password-cracking routine -->
-
-- For each word in the wordlist it computes `md5(salt + word)` and compares it to the dumped hash. A match reveals the plaintext password (`secret`), which is why the salt had to be recovered first.
 
 ### Running the Exploit
 Running the exploit recovers the credentials:
@@ -97,18 +87,23 @@ Running the exploit recovers the credentials:
 <img width="756" height="199" alt="exploit_success" src="https://github.com/user-attachments/assets/a53b8297-8f4a-471f-8da1-a55a4e9a7a07" />
 
 This covers the key details of the vulnerability:
-- CVE: CVE-2019-9053
-- Vulnerability type: SQL injection (sqli)
-- Recovered password: secret
+- CVE: **CVE-2019-9053**
+- Vulnerability type: **SQL injection (sqli)**
+- Recovered password: **secret**
 
 ### Common Issues
 A couple of issues came up while running the exploit:
 
 - The exploit ships as Python 2 code. You can run it under Python 2, or port it to Python 3. I found it easier to update it to Python 3 syntax, which mostly came down to the print statements and ensuring strings were encoded.
-- The wordlist you supply to the exploit must be UTF-8 encoded, otherwise the exploit hits a decode error and fails to recover the password.
-
+- The wordlist itself is the problem: `rockyou.txt` contains bytes that are not valid UTF-8, so when Python 3 opens it with its default UTF-8 encoding the exploit hits a decode error and never recovers the password. Reading and hashing the wordlist as latin-1 (which accepts all byte values) fixes it.
 <img width="938" height="535" alt="Screenshot_2026-05-30_18-14-54" src="https://github.com/user-attachments/assets/e96a3156-4121-4d7e-8012-08f25bdd378a" />
 
+The fix is to read and hash the wordlist as **latin-1**, which maps all 256 possible byte values and therefore decodes anything without erroring. Two lines in `crack_password()` need the encoding added (marked in the exploit file):
+```python
+dict = open(wordlist, encoding='latin-1')  # add encoding
+...
+if hashlib.md5((str(salt) + line).encode(encoding='latin-1')).hexdigest() == password:  # add encoding
+```
 ## Gaining Access
 The exploit output provided a username and password:
 - `mitch`
@@ -162,7 +157,7 @@ Both flags were recovered: the user flag after logging in as `mitch` with the cr
 - **Enumeration is the foundation.** The default Apache page hid the real attack vector. `ffuf` and a quick read of `robots.txt` exposed the CMS that everything else depended on.
 - **Version numbers are gold.** Identifying the exact CMS Made Simple version is what made matching it to CVE-2019-9053 possible. A footer version string is worth scrolling for.
 - **Understand the exploit before running it.** Knowing this was a time-based blind SQL injection explained both how it worked and why it was slow.
-- **Mind your tooling and inputs.** The exploit shipped as Python 2 and needed porting to Python 3, and the wordlist had to be UTF-8 encoded, an overlooked encoding issue that otherwise caused a decode error and a failed run.
+- **Mind your tooling and inputs.** The exploit shipped as Python 2 and needed porting to Python 3, and `rockyou.txt` contained non-UTF-8 bytes that triggered a decode error under Python's default UTF-8 — reading and hashing the wordlist as latin-1 fixed it.
 - **Stabilize your shell early.** Upgrading to a proper interactive TTY made enumeration and privilege escalation far smoother.
 - **Check sudo -l first for privesc.** A single misconfigured sudo entry (`vim` as root, no password) was the entire path to root. Legitimate binaries with elevated rights are a classic, high-impact misconfiguration.
 
