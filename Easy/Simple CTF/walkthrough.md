@@ -1,6 +1,6 @@
 # Simple CTF -- TryHackMe Writeup
 
-**Difficulty:** Easy
+**Difficulty:** Easy  
 **Category:** Web Exploitation / Linux Privilege Escalation
 
 ## Introduction
@@ -44,11 +44,13 @@ Referencing Exploit-DB for this specific version surfaced a matching exploit, a 
 
 ### How the Exploit Works: CVE-2019-9053 (Time-Based Blind SQL Injection)
 Before running the exploit, I looked up what it actually does:
+
 <img width="542" height="338" alt="Screenshot 2026-05-21 at 17-55-01 cms made simple sql injection exploit 2 2 8 - Google Search" src="https://github.com/user-attachments/assets/687d0eb0-7585-4910-b6d4-963aca6765f9" />
 
 CVE-2019-9053 is a time-based blind SQL injection in CMS Made Simple 2.2.8. In a blind injection, the application does not return query results directly, so the attacker cannot simply read data off the page. Instead, the exploit injects SQL that includes a conditional time delay, for example, "if the next character of the password hash is X, wait 5 seconds." By measuring how long the server takes to respond, the exploit infers each character one at a time, gradually reconstructing the administrator's username and password reset hash (and, with a wordlist, cracking the password). It is slow by nature, since each character requires its own timed request, but it reliably extracts data the application never intended to expose.
 
 Running the exploit:
+
 <img width="756" height="199" alt="exploit_success" src="https://github.com/user-attachments/assets/a53b8297-8f4a-471f-8da1-a55a4e9a7a07" />
 
 This answers Questions 3 through 5:
@@ -69,6 +71,7 @@ The exploit output provided a username and password:
 - `secret`
 
 Logging in, the user flag was found:
+
 <img width="551" height="200" alt="Screenshot_2026-05-30_18-25-48" src="https://github.com/user-attachments/assets/bfec6ffd-052d-4364-b0a8-79dbf9772571" />
 
 Moving out of `mitch`'s home directory revealed another home directory named `sunbath`:
@@ -90,6 +93,7 @@ With the shell cleaned up, I checked `mitch`'s sudo permissions:
 
 ### Exploiting Sudo on vim
 Create a file with `vim`:
+
 <img width="609" height="46" alt="Screenshot_2026-05-30_18-51-41" src="https://github.com/user-attachments/assets/267755d3-3602-49fa-abc6-32804aaa102f" />
 
 Once inside, in normal mode, run the following to spawn a root shell (since `vim` is running with root privileges):
@@ -99,6 +103,7 @@ Once inside, in normal mode, run the following to spawn a root shell (since `vim
 <img width="935" height="798" alt="Screenshot_2026-05-30_18-52-15" src="https://github.com/user-attachments/assets/e052c4c7-42f2-48fb-b232-b73ea855712c" />
 
 With the root shell, the root flag was found:
+
 <img width="544" height="145" alt="root" src="https://github.com/user-attachments/assets/4fec6c1c-b99c-410a-b7b8-669c2a727d0b" />
 
 ## Flag Capture
