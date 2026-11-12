@@ -1,6 +1,6 @@
 # TakeOver -- TryHackMe Writeup
 
-**Difficulty:** Easy
+**Difficulty:** Easy  
 **Category:** Web Enumeration / Subdomain Discovery
 
 ## Introduction
