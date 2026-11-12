@@ -1,4 +1,4 @@
-# Agent T — TryHackMe Writeup
+# Agent T -- TryHackMe Writeup
 
 **Difficulty:** Easy  
 **Category:** Web / Supply-Chain Vulnerability  
@@ -103,3 +103,10 @@ Since this was a pseudo-shell I ran the `find` command to locate the flag and I 
 - **Version fingerprinting matters.** Identifying the exact PHP version during enumeration was what led directly to the exploit which is a reminder to always check HTTP headers along with `nmap` results for software versions during recon.
 - **Supply-chain attacks target trust, not just the code**. This wasn't an application bug. This was a compromise of PHP's own official source repository, showing that the tools underneath your code can also be an attack surface.
 - **Avoid running dev builds** in production because this vulnerability only existed because of a short-lived `-dev` release.
+
+## Tools Used
+- `nmap`
+- `ffuf`
+- Burp Suite
+- `searchsploit`
+- [flast101's PHP 8.1.0-dev backdoor exploit](https://github.com/flast101/php-8.1.0-dev-backdoor-rce)
