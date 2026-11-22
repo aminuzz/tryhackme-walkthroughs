@@ -1,0 +1,94 @@
+# Source -- TryHackMe Writeup
+
+**Difficulty:** Easy  
+**Category:** Web Exploitation / Remote Code Execution (CVE-2019-15107)
+
+> **Credit:** The standalone proof-of-concept exploit referenced in this writeup and included in this folder (`CVE-2019-15107-PoC.py`) was written by **Mattb709**. The original project is available at [github.com/Mattb709/CVE-2019-15107-PoC](https://github.com/Mattb709/CVE-2019-15107-PoC) and is included here under its MIT license. All credit for that exploit goes to the author.
+
+## Introduction
+Source is an easy-rated TryHackMe room that drives home a single lesson: keep your software patched. The target runs Webmin 1.890, a version carrying CVE-2019-15107, an unauthenticated remote code execution backdoor that was planted in the official source through a supply-chain compromise. Because the flaw executes commands as root with no authentication, exploiting it leads straight to a full root shell and both flags, with no privilege escalation required.
+
+## Enumeration
+### Nmap Scan
+A full-port service scan returned only two open ports:
+
+<img width="1568" height="643" alt="image" src="https://github.com/user-attachments/assets/9eacee89-348d-4f80-9fc0-abf79cf339a9" />
+
+- Port 22 (SSH, OpenSSH 7.6p1).
+- Port 10000 (HTTP, MiniServ 1.890, the Webmin control panel).
+
+SSH offers no obvious way in without credentials, so attention goes to the Webmin service on port 10000. The version string, MiniServ 1.890, is the critical detail: that exact version is known to be backdoored.
+
+### Identifying the Vulnerability
+Searching for known Webmin exploits confirmed that this version is a target:
+
+<img width="1568" height="660" alt="image" src="https://github.com/user-attachments/assets/a93b0b96-cb1f-445c-b7f6-f25e87026594" />
+
+Webmin 1.890 falls within the vulnerable range for CVE-2019-15107. Researching the CVE details explains why it is so severe:
+
+<img width="690" height="547" alt="image" src="https://github.com/user-attachments/assets/8da8de6d-1683-48bb-aa7a-b89d0e4fc42d" />
+
+## How the Exploit Works: CVE-2019-15107 (Webmin Backdoor)
+CVE-2019-15107 is not an ordinary coding mistake. It is an intentional backdoor that was inserted into Webmin's source after an attacker compromised the project's build infrastructure, which is why the room themes its flags around a supply-chain compromise.
+
+The vulnerability lives in the `password_change.cgi` script, which handles the "change expired password" feature. The `expired` parameter is passed into a shell command without sanitization. An unauthenticated attacker can send a crafted POST request to `/password_change.cgi`, with a `Referer` header pointing at `session_login.cgi` to satisfy the script's origin check, and inject shell commands through that parameter. Because Webmin runs as root, the injected command also executes as root. For example, a request carrying `expired=id` returns the output of the `id` command, confirming code execution as the root user with no login required.
+
+## Exploitation
+Because the vulnerability is well known, the Metasploit Framework ships a dedicated module, `exploit/linux/http/webmin_backdoor`, which automates the backdoor request and returns an interactive session. The module was configured against the target:
+
+<img width="1568" height="758" alt="image" src="https://github.com/user-attachments/assets/5d58f398-315c-480f-80df-c71e31a7046d" />
+
+The important settings:
+- `RHOSTS` set to the target and `RPORT` to 10000.
+- `SSL` and `SRVSSL` set to `true`, since Webmin serves HTTPS on port 10000.
+- `TARGETURI` left as `/`.
+- Payload `cmd/unix/reverse_perl` with `LHOST` set to the attacking machine and `LPORT` 4444.
+
+`ForceExploit` was also set to `true` so the module would proceed with the attempt rather than aborting on its safety check:
+
+<img width="979" height="48" alt="image" src="https://github.com/user-attachments/assets/8c10799f-fde8-488c-bb75-3439c2c3bd33" />
+
+Running the module confirmed the target was vulnerable, delivered the Perl reverse-shell payload, and opened a command shell session. A quick `whoami` confirmed the session was running as root, and the flags were located and read directly:
+
+<img width="1568" height="418" alt="image" src="https://github.com/user-attachments/assets/1ff6be54-38af-4d22-9b01-27dbae679f14" />
+
+The user flag was found at `/home/dark/user.txt` and the root flag at `/root/root.txt`, both readable immediately because the foothold was already a root shell.
+
+## Breaking Down the PoC
+The same backdoor can be triggered manually, without Metasploit, using Mattb709's standalone `CVE-2019-15107-PoC.py` (included in this folder). It is a clear illustration of exactly how the CVE is abused.
+
+The vulnerability check sends a single crafted request:
+```python
+url = f"http://{ip}:{port}/password_change.cgi"
+headers = {
+    "Referer": f"http://{ip}:{port}/session_login.cgi",
+    "Content-Type": "application/x-www-form-urlencoded",
+}
+payload = "expired=id"
+```
+The `Referer` header satisfies the origin check that `password_change.cgi` performs, and the body sets the malicious `expired` parameter to the command `id`. If the response contains `uid=`, the target is backdoored, because the server actually executed `id` and returned its output.
+
+Arbitrary command execution reuses the same request, swapping the payload for any command:
+```python
+payload = f"expired={command}"
+```
+The script then extracts the command's output from between the `<p>` tags in the returned HTML. In other words, every command runs through the `expired` parameter, is executed as root by Webmin, and its output is reflected back in the page, which is the entire vulnerability in a few lines of Python.
+
+## Flag Capture
+Both flags were recovered directly from the root shell obtained through the Webmin backdoor, with no privilege escalation needed:
+```
+user.txt:  THM{SUPPLY_CHAIN_COMPROMISE}
+root.txt:  THM{UPDATE_YOUR_INSTALL}
+```
+
+## Lessons Learned
+- **Version strings are a direct path to exploits.** The service banner alone (MiniServ 1.890) was enough to identify a known, catastrophic vulnerability. Service enumeration that captures exact versions is often the whole battle.
+- **Supply-chain compromises are uniquely dangerous.** This was not a bug a developer introduced by accident, it was malicious code added upstream and shipped to everyone who updated. Trusting a signed release is not the same as the release being safe.
+- **Unauthenticated RCE as root removes every other step.** There was no credential hunting and no privilege escalation, because the flaw already executes as root. One missing patch collapsed the entire attack chain into a single request.
+- **Patching is the real fix.** Both flag names, `SUPPLY_CHAIN_COMPROMISE` and `UPDATE_YOUR_INSTALL`, point at the lesson: the only defense against a known backdoor of this kind is keeping software current.
+
+## Tools Used
+- `nmap`
+- `searchsploit`
+- **Metasploit** (`exploit/linux/http/webmin_backdoor`)
+- **Mattb709's** `CVE-2019-15107-PoC.py`
