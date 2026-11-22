@@ -3,7 +3,6 @@
 **Difficulty:** Easy  
 **Category:** Web Exploitation / Remote Code Execution (CVE-2019-15107)
 
-> **Credit:** The standalone proof-of-concept exploit referenced in this writeup and included in this folder (`CVE-2019-15107-PoC.py`) was written by **Mattb709**. The original project is available at [github.com/Mattb709/CVE-2019-15107-Scanner](https://github.com/Mattb709/CVE-2019-15107-Scanner) and is included here under its MIT license. All credit for that exploit goes to the author.
 
 ## Introduction
 Source is an easy-rated TryHackMe room that drives home a single lesson: keep your software patched. The target runs Webmin 1.890, a version carrying CVE-2019-15107, an unauthenticated remote code execution backdoor that was planted in the official source through a supply-chain compromise. Because the flaw executes commands as root with no authentication, exploiting it leads straight to a full root shell and both flags, with no privilege escalation required.
@@ -54,26 +53,6 @@ Running the module confirmed the target was vulnerable, delivered the Perl rever
 
 The user flag was found at `/home/dark/user.txt` and the root flag at `/root/root.txt`, both readable immediately because the foothold was already a root shell.
 
-## Breaking Down the PoC
-The same backdoor can be triggered manually, without Metasploit, using Mattb709's standalone `CVE-2019-15107-PoC.py` (included in this folder). It is a clear illustration of exactly how the CVE is abused.
-
-The vulnerability check sends a single crafted request:
-```python
-url = f"http://{ip}:{port}/password_change.cgi"
-headers = {
-    "Referer": f"http://{ip}:{port}/session_login.cgi",
-    "Content-Type": "application/x-www-form-urlencoded",
-}
-payload = "expired=id"
-```
-The `Referer` header satisfies the origin check that `password_change.cgi` performs, and the body sets the malicious `expired` parameter to the command `id`. If the response contains `uid=`, the target is backdoored, because the server actually executed `id` and returned its output.
-
-Arbitrary command execution reuses the same request, swapping the payload for any command:
-```python
-payload = f"expired={command}"
-```
-The script then extracts the command's output from between the `<p>` tags in the returned HTML. In other words, every command runs through the `expired` parameter, is executed as root by Webmin, and its output is reflected back in the page, which is the entire vulnerability in a few lines of Python.
-
 ## Flag Capture
 Both flags were recovered directly from the root shell obtained through the Webmin backdoor, with no privilege escalation needed:
 ```
@@ -91,4 +70,3 @@ root.txt:  THM{UPDATE_YOUR_INSTALL}
 - `nmap`
 - `searchsploit`
 - **Metasploit** (`exploit/linux/http/webmin_backdoor`)
-- **Mattb709's** `CVE-2019-15107-PoC.py`
