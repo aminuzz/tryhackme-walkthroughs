@@ -3,7 +3,7 @@
 **Difficulty:** Easy  
 **Category:** Web Exploitation / Remote Code Execution (CVE-2019-15107)
 
-> **Credit:** The standalone proof-of-concept exploit referenced in this writeup and included in this folder (`CVE-2019-15107-PoC.py`) was written by **Mattb709**. The original project is available at [github.com/Mattb709/CVE-2019-15107-PoC](https://github.com/Mattb709/CVE-2019-15107-PoC) and is included here under its MIT license. All credit for that exploit goes to the author.
+> **Credit:** The standalone proof-of-concept exploit referenced in this writeup and included in this folder (`CVE-2019-15107-PoC.py`) was written by **Mattb709**. The original project is available at [github.com/Mattb709/CVE-2019-15107-Scanner](https://github.com/Mattb709/CVE-2019-15107-Scanner) and is included here under its MIT license. All credit for that exploit goes to the author.
 
 ## Introduction
 Source is an easy-rated TryHackMe room that drives home a single lesson: keep your software patched. The target runs Webmin 1.890, a version carrying CVE-2019-15107, an unauthenticated remote code execution backdoor that was planted in the official source through a supply-chain compromise. Because the flaw executes commands as root with no authentication, exploiting it leads straight to a full root shell and both flags, with no privilege escalation required.
