@@ -40,6 +40,7 @@ Rooms built around a specific named vulnerability leading to remote code executi
 | [Vulnerability Capstone](CVE-and-RCE/Vulnerability%20Capstone/walkthrough.md) | Easy | CVE research, Fuel CMS exploitation |
 | [Agent T](CVE-and-RCE/Agent%20T/walkthrough.md) | Easy | PHP 8.1.0-dev User-Agentt backdoor, remote code execution |
 | [Simple CTF](CVE-and-RCE/Simple%20CTF/walkthrough.md) | Easy | CMS Made Simple SQL injection, CVE-2019-9053, sudo vim privilege escalation |
+| [Tomghost](CVE-and-RCE/Tomghost/walkthrough.md) | Easy | Apache Tomcat AJP "Ghostcat", CVE-2020-1938, file read to SSH creds, sudo zip privilege escalation |
 
 ## Steganography
 Rooms where data hidden inside files is a core step in the attack chain.
