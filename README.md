@@ -86,3 +86,7 @@ Rooms focused on identifying and cracking hashes.
 ---
 
 Each room folder contains its full `walkthrough.md`. Writeups are my own; where a room required a public exploit written by someone else, that author is credited within the writeup.
+
+## 🔗 Connect
+- [My TryHackMe Profile](https://tryhackme.com/p/yourusername)
+- [LinkedIn](https://linkedin.com/in/aminuz-zaman)
