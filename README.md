@@ -29,6 +29,7 @@ Rooms where the foothold comes through a web application: file-upload bypasses, 
 | [Easy Peasy](Web-Exploitation/Easy%20Peasy/walkthrough.md) | Easy | Web enumeration, encoding, steganography, cron-based privilege escalation |
 | [Neighbor](Web-Exploitation/Neighbor/walkthrough.md) | Easy | Broken access control via parameter manipulation |
 | [TakeOver](Web-Exploitation/TakeOver/walkthrough.md) | Easy | Subdomain enumeration and discovery |
+| [Wgel CTF](Web-Exploitation/Wgel%20CTF/walkthrough.md) | Easy | Exposed SSH key via recursive web enum, sudo wget file read/write, /etc/passwd overwrite to root |
 
 ## CVE and Remote Code Execution
 Rooms built around a specific named vulnerability leading to remote code execution.
